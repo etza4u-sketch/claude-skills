@@ -1,13 +1,10 @@
-"""Flask web application for the AI Job Search dashboard."""
-import sys
-import os
-import json
-import threading
+"""Flask web application — AI Job Search dashboard."""
+import sys, os, json, threading, csv, io
 from datetime import datetime
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from flask import Flask, render_template, jsonify, request, Response
+from flask import Flask, render_template, jsonify, request, Response, stream_with_context
 from config import AI_KEYWORDS, ALERT_URGENCY_THRESHOLD, DATA_FILE
 from searchers import DrushimSearcher, IndeedSearcher, RSSSearcher
 from classifiers import BSGClassifier, SeniorityClassifier
@@ -15,88 +12,80 @@ from signals import FundingSignalDetector, MarketSignalAnalyzer
 
 app = Flask(__name__)
 
-# ── In-memory state ──────────────────────────────────────────────────────────
+# ── shared state ─────────────────────────────────────────────────────────────
 _state = {
     "scanning": False,
     "last_scan": None,
     "jobs": [],
     "funding": [],
     "analysis": {},
-    "progress": [],          # list of progress messages streamed to UI
+    "log": [],
 }
 _lock = threading.Lock()
 
+CACHE_PATH = os.path.join(os.path.dirname(__file__), "..", DATA_FILE)
 
-# ── Helpers ──────────────────────────────────────────────────────────────────
 
-def _push(msg: str):
+def _log(msg: str):
     with _lock:
-        _state["progress"].append(msg)
+        _state["log"].append(msg)
 
 
+# ── scan worker ───────────────────────────────────────────────────────────────
 def _run_scan():
     with _lock:
         _state["scanning"] = True
-        _state["progress"] = []
+        _state["log"] = []
 
-    _push("🔍 Starting scan…")
-    searchers = [
-        ("drushim.co.il", DrushimSearcher()),
-        ("indeed.com",    IndeedSearcher()),
-        ("RSS feeds",     RSSSearcher()),
-    ]
+    _log("🔍 מתחיל סריקה…")
     sc = SeniorityClassifier()
     bc = BSGClassifier()
     jobs = []
 
-    for name, searcher in searchers:
-        _push(f"📡 Scanning {name}…")
+    for label, searcher in [
+        ("drushim.co.il",  DrushimSearcher()),
+        ("indeed.com",     IndeedSearcher()),
+        ("RSS / חדשות",    RSSSearcher()),
+    ]:
+        _log(f"📡 סורק {label}…")
         try:
             fetched = searcher.search(AI_KEYWORDS)
-            for job in fetched:
-                sc.classify(job)
-                bc.classify(job)
+            for j in fetched:
+                sc.classify(j)
+                bc.classify(j)
             jobs.extend(fetched)
-            _push(f"✅ {name}: {len(fetched)} jobs found")
-        except Exception as exc:
-            _push(f"⚠️ {name}: {exc}")
+            _log(f"✅ {label}: נמצאו {len(fetched)} משרות")
+        except Exception as e:
+            _log(f"⚠️ {label}: {e}")
 
-    # Deduplicate
     seen = {}
-    for job in jobs:
-        seen[job.id] = job
+    for j in jobs:
+        seen[j.id] = j
     jobs = list(seen.values())
-    _push(f"🧹 Deduplicated → {len(jobs)} unique jobs")
+    _log(f"🧹 לאחר ניקוי כפילויות: {len(jobs)} משרות ייחודיות")
 
-    _push("💰 Scanning funding news…")
+    _log("💰 סורק חדשות גיוס הון…")
     try:
         funding = FundingSignalDetector().scan()
-        _push(f"✅ {len(funding)} funding signals found")
-    except Exception as exc:
-        _push(f"⚠️ Funding scan: {exc}")
+        _log(f"✅ נמצאו {len(funding)} איתותי גיוס הון")
+    except Exception as e:
+        _log(f"⚠️ גיוס הון: {e}")
         funding = []
 
     analysis = MarketSignalAnalyzer().analyze(jobs, funding)
-    _push("📊 Analysis complete. Done!")
+    _log("📊 הניתוח הושלם. סיום!")
 
+    now = datetime.now().isoformat()
     with _lock:
-        _state["jobs"] = [j.to_dict() for j in jobs]
-        _state["funding"] = [f.to_dict() for f in funding]
-        _state["analysis"] = {
-            **analysis,
-            "top_skills": analysis.get("top_skills", []),
-            "hot_domains": analysis.get("hot_domains", []),
-            "top_hiring_companies": analysis.get("top_hiring_companies", []),
-            "top_cities": analysis.get("top_cities", []),
-        }
-        _state["last_scan"] = datetime.now().isoformat()
-        _state["scanning"] = False
+        _state["jobs"]      = [j.to_dict() for j in jobs]
+        _state["funding"]   = [f.to_dict() for f in funding]
+        _state["analysis"]  = analysis
+        _state["last_scan"] = now
+        _state["scanning"]  = False
 
-    # Persist to disk
     try:
-        with open(os.path.join(os.path.dirname(__file__), "..", DATA_FILE), "w") as f:
-            json.dump({"scanned_at": _state["last_scan"],
-                       "count": len(jobs),
+        with open(CACHE_PATH, "w", encoding="utf-8") as f:
+            json.dump({"scanned_at": now, "count": len(jobs),
                        "jobs": _state["jobs"],
                        "funding_signals": _state["funding"]},
                       f, ensure_ascii=False, indent=2)
@@ -104,8 +93,7 @@ def _run_scan():
         pass
 
 
-# ── Routes ───────────────────────────────────────────────────────────────────
-
+# ── routes ────────────────────────────────────────────────────────────────────
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -116,20 +104,19 @@ def api_scan():
     with _lock:
         if _state["scanning"]:
             return jsonify({"status": "already_running"}), 409
-    t = threading.Thread(target=_run_scan, daemon=True)
-    t.start()
+    threading.Thread(target=_run_scan, daemon=True).start()
     return jsonify({"status": "started"})
 
 
 @app.route("/api/progress")
 def api_progress():
-    """Server-Sent Events stream for scan progress."""
+    """Server-Sent Events — streams log lines while scanning."""
     def generate():
-        sent = 0
         import time
+        sent = 0
         while True:
             with _lock:
-                msgs = _state["progress"]
+                msgs     = list(_state["log"])
                 scanning = _state["scanning"]
             while sent < len(msgs):
                 yield f"data: {json.dumps({'msg': msgs[sent]})}\n\n"
@@ -137,32 +124,54 @@ def api_progress():
             if not scanning and sent >= len(msgs):
                 yield f"data: {json.dumps({'done': True})}\n\n"
                 break
-            time.sleep(0.4)
-    return Response(generate(), mimetype="text/event-stream")
+            time.sleep(0.35)
+    return Response(stream_with_context(generate()), mimetype="text/event-stream")
 
 
 @app.route("/api/jobs")
 def api_jobs():
-    tier = request.args.get("tier", "all").lower()
-    senior_only = request.args.get("senior") == "1"
-    min_score = float(request.args.get("min_score", 0))
+    tier       = request.args.get("tier", "all").lower()
+    senior     = request.args.get("senior") == "1"
+    min_score  = float(request.args.get("min_score", 0))
+    q          = request.args.get("q", "").lower().strip()
+    page       = int(request.args.get("page", 1))
+    per_page   = int(request.args.get("per_page", 20))
 
     with _lock:
         jobs = list(_state["jobs"])
 
     if tier != "all":
         jobs = [j for j in jobs if (j.get("tier") or "bronze").lower() == tier]
-    if senior_only:
+    if senior:
         jobs = [j for j in jobs if j.get("is_senior")]
     if min_score > 0:
         jobs = [j for j in jobs if j.get("urgency_score", 0) >= min_score]
+    if q:
+        jobs = [j for j in jobs
+                if q in (j.get("title","") + j.get("company","") + j.get("description","")).lower()]
 
     jobs.sort(key=lambda j: (
         {"gold": 3, "silver": 2, "bronze": 1}.get((j.get("tier") or "bronze").lower(), 0),
         j.get("urgency_score", 0),
     ), reverse=True)
 
-    return jsonify({"jobs": jobs, "total": len(jobs)})
+    total   = len(jobs)
+    start   = (page - 1) * per_page
+    paginated = jobs[start: start + per_page]
+
+    return jsonify({"jobs": paginated, "total": total,
+                    "page": page, "per_page": per_page,
+                    "pages": max(1, -(-total // per_page))})
+
+
+@app.route("/api/job/<job_id>")
+def api_job_detail(job_id):
+    with _lock:
+        jobs = _state["jobs"]
+    for j in jobs:
+        if j.get("id") == job_id:
+            return jsonify(j)
+    return jsonify({"error": "not found"}), 404
 
 
 @app.route("/api/funding")
@@ -174,40 +183,67 @@ def api_funding():
 @app.route("/api/analysis")
 def api_analysis():
     with _lock:
-        return jsonify({
-            "analysis": _state["analysis"],
-            "last_scan": _state["last_scan"],
-            "scanning": _state["scanning"],
-        })
+        a = dict(_state["analysis"])
+        # Convert Counter tuples to plain lists for JSON
+        for k in ("top_skills", "hot_domains", "top_hiring_companies", "top_cities"):
+            if k in a:
+                a[k] = [[item[0], item[1]] for item in a[k]]
+        return jsonify({"analysis": a,
+                        "last_scan": _state["last_scan"],
+                        "scanning":  _state["scanning"]})
 
 
 @app.route("/api/status")
 def api_status():
     with _lock:
-        return jsonify({
-            "scanning": _state["scanning"],
-            "last_scan": _state["last_scan"],
-            "job_count": len(_state["jobs"]),
-            "funding_count": len(_state["funding"]),
-        })
+        return jsonify({"scanning":      _state["scanning"],
+                        "last_scan":     _state["last_scan"],
+                        "job_count":     len(_state["jobs"]),
+                        "funding_count": len(_state["funding"])})
+
+
+@app.route("/api/export/csv")
+def api_export_csv():
+    with _lock:
+        jobs = list(_state["jobs"])
+    if not jobs:
+        return jsonify({"error": "no data"}), 404
+
+    buf = io.StringIO()
+    w   = csv.DictWriter(buf, fieldnames=[
+        "id","tier","urgency_score","is_senior","title","company",
+        "location","source","published_at","salary","url","description"])
+    w.writeheader()
+    for j in jobs:
+        row = {k: j.get(k,"") for k in w.fieldnames}
+        row["description"] = (row.get("description") or "")[:200]
+        w.writerow(row)
+
+    return Response(
+        buf.getvalue(),
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment; filename=ai_jobs.csv"}
+    )
+
+
+# ── startup ───────────────────────────────────────────────────────────────────
+def _load_cache():
+    if not os.path.exists(CACHE_PATH):
+        return
+    try:
+        with open(CACHE_PATH, encoding="utf-8") as f:
+            cached = json.load(f)
+        with _lock:
+            _state["jobs"]      = cached.get("jobs", [])
+            _state["funding"]   = cached.get("funding_signals", [])
+            _state["last_scan"] = cached.get("scanned_at")
+        print(f"  Loaded {len(_state['jobs'])} cached jobs from disk.")
+    except Exception as e:
+        print(f"  Cache load failed: {e}")
 
 
 if __name__ == "__main__":
-    # Try to load previous scan from disk on startup
-    cache_path = os.path.join(os.path.dirname(__file__), "..", DATA_FILE)
-    if os.path.exists(cache_path):
-        try:
-            with open(cache_path) as f:
-                cached = json.load(f)
-            _state["jobs"] = cached.get("jobs", [])
-            _state["funding"] = cached.get("funding_signals", [])
-            _state["last_scan"] = cached.get("scanned_at")
-            _state["analysis"] = MarketSignalAnalyzer().analyze(
-                [], []
-            )  # empty placeholder
-        except Exception:
-            pass
-
+    _load_cache()
     port = int(os.environ.get("PORT", 5050))
-    print(f"\n🚀  AI Job Search webapp → http://localhost:{port}\n")
+    print(f"\n🚀  AI Job Search  →  http://localhost:{port}\n")
     app.run(host="0.0.0.0", port=port, debug=False)
