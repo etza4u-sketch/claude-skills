@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Job Search — Developer Handoff</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+*{font-family:'Inter',sans-serif;box-sizing:border-box}
+code,pre{font-family:'JetBrains Mono',monospace!important}
+
+.tab-btn{transition:all .15s;border-bottom:2px solid transparent}
+.tab-btn.active{color:#60a5fa;border-bottom-color:#60a5fa}
+.tab-pane{display:none}.tab-pane.active{display:block}
+
+.method-get   {background:#166534;color:#86efac}
+.method-post  {background:#1e3a5f;color:#93c5fd}
+.method-delete{background:#7f1d1d;color:#fca5a5}
+
+pre code.hljs{border-radius:.75rem;font-size:.82rem;line-height:1.6}
+
+.file-pill{cursor:pointer;transition:background .12s}
+.file-pill:hover{background:#1e293b}
+.file-pill.active{background:#1e3a5f;color:#93c5fd}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:#334155;border-radius:3px}
+
+.arch-box{border:1px solid;padding:.5rem 1rem;border-radius:.5rem;text-align:center;font-size:.8rem;font-weight:600}
+.arch-arrow{color:#64748b;font-size:1.4rem;line-height:1;margin:0 .25rem}
+
+.badge-new{background:#166534;color:#bbf7d0;padding:1px 6px;border-radius:99px;font-size:.65rem;font-weight:700}
+.badge-req{background:#7f1d1d;color:#fecaca;padding:1px 6px;border-radius:99px;font-size:.65rem;font-weight:700}
+
+details>summary{cursor:pointer;user-select:none}
+details[open]>summary .chevron{transform:rotate(90deg)}
+.chevron{display:inline-block;transition:transform .2s}
+</style>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen">
+
+<!-- ═══ HEADER ═══ -->
+<header class="bg-gray-900 border-b border-gray-800 px-8 py-5">
+  <div class="max-w-screen-xl mx-auto flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-xl">🤖</div>
+      <div>
+        <h1 class="text-lg font-bold text-white">AI Job Search — Developer Handoff</h1>
+        <p class="text-xs text-gray-400">Bronze · Silver · Gold model · Flask + Python 3.11</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-3 text-xs text-gray-400">
+      <span class="px-2 py-1 bg-gray-800 rounded-md">v1.0</span>
+      <span class="px-2 py-1 bg-gray-800 rounded-md">May 2025</span>
+      <span class="px-2 py-1 bg-green-900 text-green-300 rounded-md">MIT</span>
+    </div>
+  </div>
+</header>
+
+<!-- ═══ NAV TABS ═══ -->
+<nav class="bg-gray-900 border-b border-gray-800 px-8 sticky top-0 z-20">
+  <div class="max-w-screen-xl mx-auto flex gap-6 overflow-x-auto">
+    <button class="tab-btn active text-sm py-3 whitespace-nowrap" data-tab="overview">Overview</button>
+    <button class="tab-btn text-gray-400 text-sm py-3 whitespace-nowrap" data-tab="setup">Setup</button>
+    <button class="tab-btn text-gray-400 text-sm py-3 whitespace-nowrap" data-tab="architecture">Architecture</button>
+    <button class="tab-btn text-gray-400 text-sm py-3 whitespace-nowrap" data-tab="api">API Reference</button>
+    <button class="tab-btn text-gray-400 text-sm py-3 whitespace-nowrap" data-tab="source">Source Code</button>
+    <button class="tab-btn text-gray-400 text-sm py-3 whitespace-nowrap" data-tab="extend">How to Extend</button>
+    <button class="tab-btn text-gray-400 text-sm py-3 whitespace-nowrap" data-tab="config">Config Reference</button>
+  </div>
+</nav>
+
+<main class="max-w-screen-xl mx-auto px-8 py-8">
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 1 — OVERVIEW
+══════════════════════════════════════════════════════ -->
+<div id="tab-overview" class="tab-pane active space-y-6">
+  <div class="grid md:grid-cols-2 gap-6">
+    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+      <h2 class="text-base font-bold text-white mb-4">What this app does</h2>
+      <p class="text-sm text-gray-300 leading-relaxed mb-4">
+        Scrapes Israeli job boards for AI engineer positions, classifies each job
+        into a <strong>Bronze / Silver / Gold</strong> tier based on opportunity quality,
+        detects funding signals that predict future hiring, and exposes everything through
+        a Flask REST API consumed by a single-page web dashboard.
+      </p>
+      <ul class="text-sm text-gray-400 space-y-2">
+        <li>🥉 <strong class="text-orange-400">Bronze</strong> — public listings on drushim/Indeed (high competition)</li>
+        <li>🥈 <strong class="text-slate-300">Silver</strong> — fast-growing or recently-funded companies</li>
+        <li>🥇 <strong class="text-yellow-400">Gold</strong> — founding roles, funding signals, hidden opportunities</li>
+      </ul>
+    </div>
+    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+      <h2 class="text-base font-bold text-white mb-4">Tech stack</h2>
+      <div class="space-y-2 text-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-gray-400">Runtime</span>
+          <span class="font-mono text-blue-300">Python 3.11</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-400">Web framework</span>
+          <span class="font-mono text-blue-300">Flask 3.x</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-400">Scraping</span>
+          <span class="font-mono text-blue-300">requests + BeautifulSoup4 + lxml</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-400">Scheduling</span>
+          <span class="font-mono text-blue-300">schedule + threading</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-400">CLI</span>
+          <span class="font-mono text-blue-300">Click + Rich</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-400">Frontend</span>
+          <span class="font-mono text-blue-300">Vanilla JS + Tailwind CDN + Chart.js</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-400">Storage</span>
+          <span class="font-mono text-blue-300">JSON file cache (no DB)</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-400">Streaming</span>
+          <span class="font-mono text-blue-300">Server-Sent Events (SSE)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- File tree -->
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+    <h2 class="text-base font-bold text-white mb-4">File tree</h2>
+    <pre class="text-sm text-gray-300 leading-relaxed"><code class="language-plaintext" style="background:transparent;padding:0">job-search-app/
+├── app.py                      ← CLI entrypoint  (Click)
+├── config.py                   ← all tuneable constants
+├── requirements.txt
+├── start.sh                    ← convenience start script
+├── jobs_cache.json             ← written after each scan (gitignored)
+│
+├── searchers/
+│   ├── base.py                 ← Job dataclass + BaseSearcher ABC
+│   ├── drushim.py              ← drushim.co.il scraper
+│   ├── indeed.py               ← il.indeed.com scraper
+│   └── rss.py                  ← generic RSS/Atom reader
+│
+├── classifiers/
+│   ├── seniority.py            ← is_senior flag + urgency_score (0–5)
+│   └── bronze_silver_gold.py   ← tier assignment (Bronze/Silver/Gold)
+│
+├── signals/
+│   ├── funding.py              ← funding news → FundingSignal + hiring prediction
+│   └── market.py               ← aggregate stats (skills, cities, heat index)
+│
+├── reports/
+│   └── generator.py            ← Rich terminal tables + alerts
+│
+├── scheduler/
+│   └── jobs.py                 ← hourly alert + weekly report daemon
+│
+└── webapp/
+    ├── server.py               ← Flask app (8 routes)
+    └── templates/
+        └── index.html          ← SPA dashboard</code></pre>
+  </div>
+
+  <!-- Data flow -->
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+    <h2 class="text-base font-bold text-white mb-4">Data flow (per scan)</h2>
+    <div class="flex flex-wrap items-center gap-2 text-xs font-mono">
+      <div class="arch-box" style="border-color:#3b82f6;color:#93c5fd">Searchers<br><span class="font-normal text-gray-400">drushim / indeed / rss</span></div>
+      <span class="arch-arrow">→</span>
+      <div class="arch-box" style="border-color:#8b5cf6;color:#c4b5fd">list[Job]</div>
+      <span class="arch-arrow">→</span>
+      <div class="arch-box" style="border-color:#ec4899;color:#f9a8d4">SeniorityClassifier<br><span class="font-normal text-gray-400">is_senior, urgency_score</span></div>
+      <span class="arch-arrow">→</span>
+      <div class="arch-box" style="border-color:#f59e0b;color:#fcd34d">BSGClassifier<br><span class="font-normal text-gray-400">tier = Gold/Silver/Bronze</span></div>
+      <span class="arch-arrow">→</span>
+      <div class="arch-box" style="border-color:#10b981;color:#6ee7b7">deduplicate<br><span class="font-normal text-gray-400">by MD5(title|company|url)</span></div>
+      <span class="arch-arrow">→</span>
+      <div class="arch-box" style="border-color:#64748b;color:#cbd5e1">JSON cache<br><span class="font-normal text-gray-400">jobs_cache.json</span></div>
+    </div>
+    <div class="flex flex-wrap items-center gap-2 text-xs font-mono mt-4">
+      <div class="arch-box" style="border-color:#3b82f6;color:#93c5fd">FundingDetector<br><span class="font-normal text-gray-400">RSS news feeds</span></div>
+      <span class="arch-arrow">→</span>
+      <div class="arch-box" style="border-color:#10b981;color:#6ee7b7">list[FundingSignal]<br><span class="font-normal text-gray-400">amount, round, prediction</span></div>
+      <span class="arch-arrow">→</span>
+      <div class="arch-box" style="border-color:#f59e0b;color:#fcd34d">MarketAnalyzer<br><span class="font-normal text-gray-400">skills, cities, heat index</span></div>
+      <span class="arch-arrow">→</span>
+      <div class="arch-box" style="border-color:#64748b;color:#cbd5e1">Flask _state<br><span class="font-normal text-gray-400">in-memory + SSE stream</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 2 — SETUP
+══════════════════════════════════════════════════════ -->
+<div id="tab-setup" class="tab-pane space-y-6">
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+    <h2 class="text-base font-bold text-white mb-5">Quick start</h2>
+    <pre><code class="language-bash"># 1. Clone / copy project
+git clone https://github.com/etza4u-sketch/claude-skills.git
+cd claude-skills/job-search-app
+
+# 2. Create virtual environment (recommended)
+python3.11 -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4a. Run the web app
+bash start.sh
+#   → http://localhost:5050
+
+# 4b. Run the CLI instead
+python app.py scan               # one-off scan + report
+python app.py scan --tier gold   # Gold only
+python app.py watch              # daemon: hourly alerts + weekly report</code></pre>
+  </div>
+
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+    <h2 class="text-base font-bold text-white mb-4">requirements.txt</h2>
+    <pre><code class="language-plaintext">requests>=2.31.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+schedule>=1.2.0
+click>=8.1.0
+rich>=13.7.0
+python-dateutil>=2.8.2
+flask>=3.0.0</code></pre>
+    <p class="text-xs text-gray-500 mt-3">
+      ⚠️ <code>feedparser</code> is intentionally excluded — it requires
+      <code>sgmllib3k</code> which fails to build on Python 3.11.
+      RSS parsing is handled manually via requests + BeautifulSoup.
+    </p>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-6">
+    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+      <h2 class="text-base font-bold text-white mb-4">Environment variables</h2>
+      <div class="space-y-3 text-sm">
+        <div>
+          <code class="text-blue-300">PORT</code>
+          <span class="text-gray-400 ml-2">default: <code>5050</code></span>
+          <p class="text-gray-500 text-xs mt-0.5">HTTP port for the Flask web app</p>
+        </div>
+      </div>
+      <pre class="mt-4"><code class="language-bash">PORT=8080 python webapp/server.py</code></pre>
+    </div>
+    <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+      <h2 class="text-base font-bold text-white mb-4">Running tests</h2>
+      <pre><code class="language-bash"># Unit test: classification pipeline
+python -c "
+from searchers.base import Job
+from classifiers.seniority import SeniorityClassifier
+from classifiers.bronze_silver_gold import BSGClassifier
+from datetime import datetime
+
+job = Job('Senior LLM Engineer','Gong','Tel Aviv',
+          'RAG, LangChain, fine-tuning','https://ex.com','test',datetime.now())
+SeniorityClassifier().classify(job)
+BSGClassifier().classify(job)
+assert job.tier == 'Gold'
+assert job.is_senior
+print('OK')
+"</code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 3 — ARCHITECTURE
+══════════════════════════════════════════════════════ -->
+<div id="tab-architecture" class="tab-pane space-y-6">
+
+  <!-- Urgency score -->
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+    <h2 class="text-base font-bold text-white mb-4">Urgency score formula  <code class="text-sm text-blue-300">SeniorityClassifier</code></h2>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead><tr class="text-gray-400 text-left border-b border-gray-700">
+          <th class="pb-2 pr-6">Component</th><th class="pb-2 pr-6">Value</th><th class="pb-2">Condition</th>
+        </tr></thead>
+        <tbody class="text-gray-300 divide-y divide-gray-800">
+          <tr><td class="py-2 pr-6 font-mono">base</td><td class="pr-6">2.0</td><td>senior/lead/architect keyword matched</td></tr>
+          <tr><td class="py-2 pr-6 font-mono">base</td><td class="pr-6">1.0</td><td>no seniority match</td></tr>
+          <tr><td class="py-2 pr-6 font-mono">base</td><td class="pr-6">0.5</td><td>junior/intern keyword matched</td></tr>
+          <tr><td class="py-2 pr-6 font-mono">bonus</td><td class="pr-6">+0.5</td><td>per match: llm, genai, generative ai, large language model</td></tr>
+          <tr><td class="py-2 pr-6 font-mono">bonus</td><td class="pr-6">+0.4</td><td>per match: rag, retrieval augmented, computer vision</td></tr>
+          <tr><td class="py-2 pr-6 font-mono">bonus</td><td class="pr-6">+0.3</td><td>per match: nlp, mlops, deep learning, transformer, fine-tun</td></tr>
+          <tr><td class="py-2 pr-6 font-mono">bonus</td><td class="pr-6">+0.2</td><td>per match: agent, prompt engineering, vector db, embedding</td></tr>
+          <tr><td class="py-2 pr-6 font-mono">bonus</td><td class="pr-6">max 2.0</td><td>total bonus cap</td></tr>
+          <tr><td class="py-2 pr-6 font-mono">recency</td><td class="pr-6">+0.5</td><td>published today (−0.1 per day, floor 0)</td></tr>
+          <tr><td class="py-2 pr-6 font-mono">tier bonus</td><td class="pr-6">+0.5</td><td>Gold tier (applied by BSGClassifier)</td></tr>
+          <tr><td class="py-2 pr-6 font-mono">tier bonus</td><td class="pr-6">+0.3</td><td>Silver tier</td></tr>
+          <tr class="font-bold"><td class="py-2 pr-6">total</td><td class="pr-6">min(sum, 5.0)</td><td>hard cap</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="text-xs text-gray-500 mt-4">
+      Immediate alert threshold: <code class="text-yellow-400">ALERT_URGENCY_THRESHOLD = 3.5</code>
+      (configurable in <code>config.py</code>)
+    </p>
+  </div>
+
+  <!-- BSG decision tree -->
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+    <h2 class="text-base font-bold text-white mb-4">BSG classifier decision tree  <code class="text-sm text-blue-300">BSGClassifier</code></h2>
+    <pre class="text-sm text-gray-300 leading-relaxed"><code class="language-plaintext" style="background:transparent;padding:0">classify(job):
+  text = title + company + description (lowercased)
+
+  ── GOLD if ANY of:
+     • ≥2 GOLD_SIGNAL_PATTERNS match  ("series [abcde]", "founding engineer", "recently raised"…)
+     • "founding" / "first * hire" / "build from scratch" in text
+     • company in FUNDED_COMPANIES AND job.is_senior == True
+
+  ── SILVER if ANY of:
+     • company in GROWTH_COMPANIES  (known high-growth companies list)
+     • ≥2 SILVER_SIGNAL_PATTERNS match  ("hybrid", "fast-growing", "scale-up"…)
+     • job.is_senior AND company in FUNDED_COMPANIES
+
+  ── BRONZE  (default fallback)</code></pre>
+  </div>
+
+  <!-- Flask state model -->
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+    <h2 class="text-base font-bold text-white mb-4">Flask server state model</h2>
+    <pre><code class="language-python">_state = {
+    "scanning":  bool,        # True while background thread is running
+    "last_scan": str|None,    # ISO-8601 timestamp of last completed scan
+    "jobs":      list[dict],  # serialised Job.to_dict() objects
+    "funding":   list[dict],  # serialised FundingSignal.to_dict() objects
+    "analysis":  dict,        # MarketSignalAnalyzer.analyze() output
+    "log":       list[str],   # append-only scan progress messages
+}
+# Protected by threading.Lock() on every read and write</code></pre>
+    <p class="text-xs text-gray-500 mt-3">
+      The scan runs in a <strong>daemon thread</strong>. Progress messages are
+      streamed to the browser via <strong>Server-Sent Events</strong> at
+      <code>GET /api/progress</code>.
+    </p>
+  </div>
+
+  <!-- Job schema -->
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+    <h2 class="text-base font-bold text-white mb-4">Job object schema</h2>
+    <pre><code class="language-python">{
+  "id":            str,          # MD5(title|company|url)[:12]
+  "title":         str,
+  "company":       str,
+  "location":      str,
+  "description":   str,          # truncated to 500 chars
+  "url":           str,
+  "source":        str,          # "drushim.co.il" | "indeed.com" | "rss:…"
+  "published_at":  str|null,     # ISO-8601
+  "salary":        str|null,
+  "tags":          list[str],    # currently unused, reserved
+  "tier":          "Gold"|"Silver"|"Bronze",
+  "urgency_score": float,        # 0.0 – 5.0
+  "is_senior":     bool,
+}</code></pre>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 4 — API REFERENCE
+══════════════════════════════════════════════════════ -->
+<div id="tab-api" class="tab-pane space-y-4">
+  <p class="text-sm text-gray-400">Base URL: <code class="text-blue-300">http://localhost:5050</code></p>
+
+  <!-- endpoint card macro -->
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl divide-y divide-gray-800">
+
+    <!-- GET / -->
+    <details open class="p-5">
+      <summary class="flex items-center gap-3 list-none">
+        <span class="method-get px-2 py-0.5 rounded text-xs font-mono font-bold">GET</span>
+        <code class="text-white font-semibold">/</code>
+        <span class="text-gray-400 text-sm ml-2">SPA dashboard (HTML)</span>
+        <span class="chevron ml-auto text-gray-500">›</span>
+      </summary>
+      <p class="text-sm text-gray-400 mt-3">Returns the full <code>index.html</code> single-page application.</p>
+    </details>
+
+    <!-- POST /api/scan -->
+    <details class="p-5">
+      <summary class="flex items-center gap-3 list-none">
+        <span class="method-post px-2 py-0.5 rounded text-xs font-mono font-bold">POST</span>
+        <code class="text-white font-semibold">/api/scan</code>
+        <span class="text-gray-400 text-sm ml-2">Start a new scan</span>
+        <span class="chevron ml-auto text-gray-500">›</span>
+      </summary>
+      <div class="mt-3 space-y-3">
+        <p class="text-sm text-gray-400">Spawns a background thread that scrapes all sources, classifies jobs, and scans funding news. Returns immediately.</p>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <p class="text-xs text-gray-500 mb-1">Response 200</p>
+            <pre><code class="language-python">{"status": "started"}</code></pre>
+          </div>
+          <div>
+            <p class="text-xs text-gray-500 mb-1">Response 409 (already running)</p>
+            <pre><code class="language-python">{"status": "already_running"}</code></pre>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <!-- GET /api/progress -->
+    <details class="p-5">
+      <summary class="flex items-center gap-3 list-none">
+        <span class="method-get px-2 py-0.5 rounded text-xs font-mono font-bold">GET</span>
+        <code class="text-white font-semibold">/api/progress</code>
+        <span class="text-gray-400 text-sm ml-2">SSE scan log stream</span>
+        <span class="chevron ml-auto text-gray-500">›</span>
+      </summary>
+      <div class="mt-3 space-y-2">
+        <p class="text-sm text-gray-400">
+          <code>text/event-stream</code> — one event per log line, then a <code>{done:true}</code> terminator.
+        </p>
+        <pre><code class="language-javascript">const es = new EventSource('/api/progress');
+es.onmessage = ({ data }) => {
+  const d = JSON.parse(data);
+  if (d.done) { es.close(); return; }
+  console.log(d.msg); // "✅ drushim.co.il: 12 jobs found"
+};</code></pre>
+      </div>
+    </details>
+
+    <!-- GET /api/jobs -->
+    <details class="p-5">
+      <summary class="flex items-center gap-3 list-none">
+        <span class="method-get px-2 py-0.5 rounded text-xs font-mono font-bold">GET</span>
+        <code class="text-white font-semibold">/api/jobs</code>
+        <span class="text-gray-400 text-sm ml-2">Paginated, filtered job list</span>
+        <span class="chevron ml-auto text-gray-500">›</span>
+      </summary>
+      <div class="mt-3 space-y-3">
+        <table class="w-full text-sm">
+          <thead><tr class="text-gray-500 text-xs text-left border-b border-gray-700">
+            <th class="pb-2 pr-4">Param</th><th class="pb-2 pr-4">Type</th><th class="pb-2 pr-4">Default</th><th class="pb-2">Description</th>
+          </tr></thead>
+          <tbody class="text-gray-300 divide-y divide-gray-800">
+            <tr><td class="py-2 pr-4 font-mono text-blue-300">tier</td><td class="pr-4">string</td><td class="pr-4">all</td><td>all | gold | silver | bronze</td></tr>
+            <tr><td class="py-2 pr-4 font-mono text-blue-300">senior</td><td class="pr-4">int</td><td class="pr-4">0</td><td>1 = senior/lead only</td></tr>
+            <tr><td class="py-2 pr-4 font-mono text-blue-300">min_score</td><td class="pr-4">float</td><td class="pr-4">0</td><td>minimum urgency score</td></tr>
+            <tr><td class="py-2 pr-4 font-mono text-blue-300">q</td><td class="pr-4">string</td><td class="pr-4">""</td><td>free-text search across title+company+description</td></tr>
+            <tr><td class="py-2 pr-4 font-mono text-blue-300">page</td><td class="pr-4">int</td><td class="pr-4">1</td><td>page number (1-indexed)</td></tr>
+            <tr><td class="py-2 pr-4 font-mono text-blue-300">per_page</td><td class="pr-4">int</td><td class="pr-4">20</td><td>items per page</td></tr>
+          </tbody>
+        </table>
+        <pre><code class="language-python">{
+  "jobs":     list[Job],   # sorted: Gold→Silver→Bronze, then urgency desc
+  "total":    int,         # total matching (before pagination)
+  "page":     int,
+  "per_page": int,
+  "pages":    int          # total pages
+}</code></pre>
+      </div>
+    </details>
+
+    <!-- GET /api/job/:id -->
+    <details class="p-5">
+      <summary class="flex items-center gap-3 list-none">
+        <span class="method-get px-2 py-0.5 rounded text-xs font-mono font-bold">GET</span>
+        <code class="text-white font-semibold">/api/job/&lt;id&gt;</code>
+        <span class="text-gray-400 text-sm ml-2">Single job detail</span>
+        <span class="chevron ml-auto text-gray-500">›</span>
+      </summary>
+      <div class="mt-3">
+        <p class="text-sm text-gray-400 mb-2">Returns the full <code>Job</code> dict for a given <code>id</code> (MD5 hash). 404 if not found.</p>
+        <pre><code class="language-bash">curl http://localhost:5050/api/job/a3f2c1b4e9d8</code></pre>
+      </div>
+    </details>
+
+    <!-- GET /api/funding -->
+    <details class="p-5">
+      <summary class="flex items-center gap-3 list-none">
+        <span class="method-get px-2 py-0.5 rounded text-xs font-mono font-bold">GET</span>
+        <code class="text-white font-semibold">/api/funding</code>
+        <span class="text-gray-400 text-sm ml-2">Funding signals</span>
+        <span class="chevron ml-auto text-gray-500">›</span>
+      </summary>
+      <pre class="mt-3"><code class="language-python">{
+  "signals": [{
+    "company":          str,
+    "amount":           str,    # "$100M"
+    "round_type":       str,    # "series b"
+    "description":      str,
+    "url":              str,
+    "published_at":     str,
+    "hiring_prediction":str,
+    "tier":             str,
+  }]
+}</code></pre>
+    </details>
+
+    <!-- GET /api/analysis -->
+    <details class="p-5">
+      <summary class="flex items-center gap-3 list-none">
+        <span class="method-get px-2 py-0.5 rounded text-xs font-mono font-bold">GET</span>
+        <code class="text-white font-semibold">/api/analysis</code>
+        <span class="text-gray-400 text-sm ml-2">Market summary + KPIs</span>
+        <span class="chevron ml-auto text-gray-500">›</span>
+      </summary>
+      <pre class="mt-3"><code class="language-python">{
+  "analysis": {
+    "total_jobs":           int,
+    "tier_breakdown":       {"Gold": int, "Silver": int, "Bronze": int},
+    "top_skills":           [["LLM", 14], ["RAG", 11], ...],
+    "hot_domains":          [["Cybersecurity", 5], ...],
+    "top_hiring_companies": [["Gong", 3], ...],
+    "top_cities":           [["Tel Aviv", 9], ...],
+    "funding_signals":      int,
+    "gold_funding":         int,
+    "market_heat":          "🔥🔥 Hot",
+  },
+  "last_scan": "2025-05-05T09:30:00",
+  "scanning":  false,
+}</code></pre>
+    </details>
+
+    <!-- GET /api/status -->
+    <details class="p-5">
+      <summary class="flex items-center gap-3 list-none">
+        <span class="method-get px-2 py-0.5 rounded text-xs font-mono font-bold">GET</span>
+        <code class="text-white font-semibold">/api/status</code>
+        <span class="text-gray-400 text-sm ml-2">Health / scan state</span>
+        <span class="chevron ml-auto text-gray-500">›</span>
+      </summary>
+      <pre class="mt-3"><code class="language-python">{
+  "scanning":      bool,
+  "last_scan":     str|null,
+  "job_count":     int,
+  "funding_count": int,
+}</code></pre>
+    </details>
+
+    <!-- GET /api/export/csv -->
+    <details class="p-5">
+      <summary class="flex items-center gap-3 list-none">
+        <span class="method-get px-2 py-0.5 rounded text-xs font-mono font-bold">GET</span>
+        <code class="text-white font-semibold">/api/export/csv</code>
+        <span class="text-gray-400 text-sm ml-2">Download all jobs as CSV</span>
+        <span class="chevron ml-auto text-gray-500">›</span>
+      </summary>
+      <p class="text-sm text-gray-400 mt-3">
+        Returns <code>Content-Type: text/csv</code> with
+        <code>Content-Disposition: attachment; filename=ai_jobs.csv</code>.
+        Columns: id, tier, urgency_score, is_senior, title, company, location,
+        source, published_at, salary, url, description (truncated 200 chars).
+      </p>
+    </details>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 5 — SOURCE CODE
+══════════════════════════════════════════════════════ -->
+<div id="tab-source" class="tab-pane">
+  <div class="flex gap-4">
+    <!-- file picker -->
+    <div class="w-56 shrink-0 space-y-1">
+      <p class="text-xs text-gray-500 uppercase tracking-wider mb-2">Files</p>
+      <div id="file-list" class="space-y-0.5"></div>
+    </div>
+    <!-- code viewer -->
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center justify-between mb-2">
+        <span id="file-name" class="text-sm text-blue-300 font-mono"></span>
+        <button onclick="copyCode()" class="text-xs text-gray-400 hover:text-white px-2 py-1 bg-gray-800 rounded transition">
+          Copy
+        </button>
+      </div>
+      <pre id="code-view" class="overflow-auto max-h-[70vh]"><code id="code-content" class="language-python"></code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 6 — HOW TO EXTEND
+══════════════════════════════════════════════════════ -->
+<div id="tab-extend" class="tab-pane space-y-6">
+
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+    <h2 class="text-base font-bold text-white mb-4">Add a new job board scraper</h2>
+    <p class="text-sm text-gray-400 mb-4">Create a class in <code>searchers/</code> that extends <code>BaseSearcher</code> and implements <code>search()</code>.</p>
+    <pre><code class="language-python"># searchers/alljobs.py
+import requests
+from bs4 import BeautifulSoup
+from datetime import datetime
+from .base import BaseSearcher, Job
+
+class AllJobsSearcher(BaseSearcher):
+    source_name = "alljobs.co.il"
+    SEARCH_URL  = "https://www.alljobs.co.il/SearchResults.aspx"
+
+    def search(self, keywords: list[str], location: str = "Israel") -> list[Job]:
+        jobs = []
+        for kw in keywords[:3]:
+            try:
+                resp = requests.get(
+                    self.SEARCH_URL,
+                    params={"position": kw},
+                    headers=self.headers,
+                    timeout=10,
+                )
+                soup = BeautifulSoup(resp.text, "lxml")
+                for card in soup.select("div.job-item")[:15]:
+                    job = self._parse_card(card)
+                    if job:
+                        jobs.append(job)
+            except Exception:
+                pass
+        return jobs
+
+    def _parse_card(self, card) -> Job | None:
+        # adapt selectors to actual page structure
+        title_el   = card.select_one("h2 a")
+        company_el = card.select_one(".company")
+        if not title_el:
+            return None
+        return Job(
+            title       = self._clean_text(title_el.get_text()),
+            company     = self._clean_text(company_el.get_text()) if company_el else "Unknown",
+            location    = "Israel",
+            description = "",
+            url         = title_el.get("href", ""),
+            source      = self.source_name,
+            published_at= datetime.now(),
+        )</code></pre>
+    <p class="text-sm text-gray-400 mt-4">
+      Then register it in <code>webapp/server.py</code> (and <code>scheduler/jobs.py</code>):
+    </p>
+    <pre><code class="language-python">from searchers.alljobs import AllJobsSearcher
+
+# inside _run_scan():
+for label, searcher in [
+    ("drushim.co.il",  DrushimSearcher()),
+    ("alljobs.co.il",  AllJobsSearcher()),   # ← add here
+    ("indeed.com",     IndeedSearcher()),
+    ("RSS / חדשות",    RSSSearcher()),
+]:</code></pre>
+  </div>
+
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+    <h2 class="text-base font-bold text-white mb-4">Tune the BSG classifier</h2>
+    <p class="text-sm text-gray-400 mb-3">
+      Add a new company to the <strong>Gold</strong> tier: edit <code>config.py</code>:
+    </p>
+    <pre><code class="language-python">FUNDED_COMPANIES = [
+    # existing...
+    "my_new_company",   # ← add lowercase substring
+]</code></pre>
+    <p class="text-sm text-gray-400 mt-4 mb-3">
+      Add a new <strong>Gold signal pattern</strong> (regex):
+    </p>
+    <pre><code class="language-python"># classifiers/bronze_silver_gold.py
+GOLD_SIGNAL_PATTERNS = [
+    # existing...
+    r'just\s+closed\s+series',   # ← new pattern
+    r'pre.?ipo',
+]</code></pre>
+  </div>
+
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+    <h2 class="text-base font-bold text-white mb-4">Add a new funding news feed</h2>
+    <pre><code class="language-python"># config.py
+NEWS_FEEDS = [
+    "https://techcrunch.com/tag/israel/feed/",
+    "https://www.calcalist.co.il/rss/0,7340,L-8,00.xml",
+    "https://www.geektime.co.il/feed/",
+    "https://your-new-feed.com/rss",   # ← add here
+]</code></pre>
+    <p class="text-sm text-gray-400 mt-3">
+      Or pass <code>extra_feeds</code> at runtime:
+    </p>
+    <pre><code class="language-python">detector = FundingSignalDetector(extra_feeds=["https://…"])
+signals  = detector.scan()</code></pre>
+  </div>
+
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+    <h2 class="text-base font-bold text-white mb-4">Add a new skill to track</h2>
+    <pre><code class="language-python"># signals/market.py
+HOT_SKILLS = [
+    "LLM", "RAG", "GenAI", ...
+    "Mixture of Experts",   # ← add here
+    "Flash Attention",
+]
+
+# classifiers/seniority.py
+SPECIALITY_SCORES = {
+    ...
+    "mixture of experts": 0.4,  # ← add bonus weight
+}</code></pre>
+  </div>
+
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+    <h2 class="text-base font-bold text-white mb-4">Persist to a real database</h2>
+    <p class="text-sm text-gray-400 mb-4">
+      Currently the app stores everything in a JSON file. To swap in SQLite (or Postgres):
+    </p>
+    <pre><code class="language-python"># Example: SQLite persistence layer
+import sqlite3, json
+from searchers.base import Job
+
+class JobRepository:
+    def __init__(self, path="jobs.db"):
+        self.conn = sqlite3.connect(path, check_same_thread=False)
+        self._create()
+
+    def _create(self):
+        self.conn.execute("""
+            CREATE TABLE IF NOT EXISTS jobs (
+              id TEXT PRIMARY KEY,
+              tier TEXT, urgency_score REAL, is_senior INTEGER,
+              title TEXT, company TEXT, location TEXT,
+              url TEXT, source TEXT, published_at TEXT,
+              salary TEXT, description TEXT, raw_json TEXT
+            )""")
+        self.conn.commit()
+
+    def upsert(self, job: Job):
+        d = job.to_dict()
+        self.conn.execute("""
+            INSERT OR REPLACE INTO jobs VALUES
+            (?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+            (d["id"], d["tier"], d["urgency_score"], int(d["is_senior"]),
+             d["title"], d["company"], d["location"],
+             d["url"], d["source"], d["published_at"],
+             d["salary"], d["description"], json.dumps(d)))
+        self.conn.commit()
+
+    def all(self) -> list[dict]:
+        rows = self.conn.execute("SELECT raw_json FROM jobs").fetchall()
+        return [json.loads(r[0]) for r in rows]</code></pre>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 7 — CONFIG REFERENCE
+══════════════════════════════════════════════════════ -->
+<div id="tab-config" class="tab-pane space-y-4">
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="bg-gray-800 text-gray-400 text-xs text-left">
+          <th class="px-5 py-3">Constant</th>
+          <th class="px-5 py-3">Default</th>
+          <th class="px-5 py-3">Description</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-800 text-gray-300">
+        <tr><td class="px-5 py-3 font-mono text-blue-300">AI_KEYWORDS</td><td class="px-5 py-3">list[str] (16)</td><td class="px-5 py-3">Search terms sent to each job board</td></tr>
+        <tr><td class="px-5 py-3 font-mono text-blue-300">SENIOR_KEYWORDS</td><td class="px-5 py-3">list[str] (12)</td><td class="px-5 py-3">Words that flag a job as senior</td></tr>
+        <tr><td class="px-5 py-3 font-mono text-blue-300">FUNDED_COMPANIES</td><td class="px-5 py-3">list[str] (15)</td><td class="px-5 py-3">Lowercased company names → Gold tier</td></tr>
+        <tr><td class="px-5 py-3 font-mono text-blue-300">FUNDING_KEYWORDS</td><td class="px-5 py-3">list[str] (10)</td><td class="px-5 py-3">Words that indicate a funding news item</td></tr>
+        <tr><td class="px-5 py-3 font-mono text-blue-300">NEWS_FEEDS</td><td class="px-5 py-3">list[str] (3)</td><td class="px-5 py-3">RSS URLs for funding signal detection</td></tr>
+        <tr><td class="px-5 py-3 font-mono text-yellow-400">ALERT_URGENCY_THRESHOLD</td><td class="px-5 py-3">3.5</td><td class="px-5 py-3">Minimum score to trigger an immediate alert</td></tr>
+        <tr><td class="px-5 py-3 font-mono text-blue-300">WEEKLY_REPORT_DAY</td><td class="px-5 py-3">"friday"</td><td class="px-5 py-3">Day for the weekly full report</td></tr>
+        <tr><td class="px-5 py-3 font-mono text-blue-300">WEEKLY_REPORT_HOUR</td><td class="px-5 py-3">"09:00"</td><td class="px-5 py-3">Time for the weekly full report</td></tr>
+        <tr><td class="px-5 py-3 font-mono text-blue-300">HOURLY_CHECK_INTERVAL</td><td class="px-5 py-3">60</td><td class="px-5 py-3">Minutes between immediate-alert scans</td></tr>
+        <tr><td class="px-5 py-3 font-mono text-blue-300">MAX_JOBS_PER_REPORT</td><td class="px-5 py-3">20</td><td class="px-5 py-3">Rows shown in CLI table reports</td></tr>
+        <tr><td class="px-5 py-3 font-mono text-blue-300">DATA_FILE</td><td class="px-5 py-3">"jobs_cache.json"</td><td class="px-5 py-3">Path to the JSON scan cache</td></tr>
+        <tr><td class="px-5 py-3 font-mono text-blue-300">ALERTS_FILE</td><td class="px-5 py-3">"alerts_history.json"</td><td class="px-5 py-3">Tracks seen job IDs to avoid duplicate alerts</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+    <h2 class="text-base font-bold text-white mb-4">SPECIALITY_SCORES weights  <code class="text-sm text-gray-400">(seniority.py)</code></h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs font-mono">
+      <div class="bg-gray-800 rounded-lg p-2"><span class="text-yellow-400">+0.5</span>  llm, genai, generative ai</div>
+      <div class="bg-gray-800 rounded-lg p-2"><span class="text-yellow-400">+0.4</span>  rag, computer vision</div>
+      <div class="bg-gray-800 rounded-lg p-2"><span class="text-blue-400">+0.3</span>  nlp, mlops, deep learning, transformer, fine-tun</div>
+      <div class="bg-gray-800 rounded-lg p-2"><span class="text-blue-400">+0.2</span>  agent, prompt engineering, vector db, embedding</div>
+    </div>
+    <p class="text-xs text-gray-500 mt-3">Total bonus capped at <code>2.0</code>. Edit the dict in <code>classifiers/seniority.py</code> to adjust weights.</p>
+  </div>
+</div>
+
+</main>
+
+<!-- ═══ SOURCE FILES DATA ═══ -->
+<script>
+const FILES = {
+  "config.py": {"lang":"python","code":`"""Configuration for the job search application."""
+
+# Job search keywords for AI engineer positions
+AI_KEYWORDS = [
+    "AI engineer", "machine learning engineer", "ML engineer",
+    "deep learning", "NLP engineer", "LLM engineer",
+    "generative AI", "GenAI", "computer vision engineer",
+    "MLOps engineer", "data scientist AI", "AI researcher",
+    "artificial intelligence engineer", "מהנדס בינה מלאכותית",
+    "מהנדס AI", "מדען נתונים", "LLM", "RAG engineer",
+]
+
+SENIOR_KEYWORDS = [
+    "senior", "lead", "principal", "head", "chief", "staff",
+    "architect", "director", "manager", "בכיר", "מוביל", "ראש",
+]
+
+FUNDED_COMPANIES = [
+    "gong", "ai21", "aqua security", "lemonade", "monday.com",
+    "wiz", "snyk", "cato networks", "talon", "claroty",
+    "armis", "cybereason", "hunter.io", "octup", "noma",
+]
+
+FUNDING_KEYWORDS = [
+    "raises", "funding", "seed round", "series a", "series b",
+    "series c", "million", "investment", "backed by", "venture",
+    "גייסה", "גיוס הון", "השקעה", "מימון",
+]
+
+NEWS_FEEDS = [
+    "https://techcrunch.com/tag/israel/feed/",
+    "https://www.calcalist.co.il/rss/0,7340,L-8,00.xml",
+    "https://www.geektime.co.il/feed/",
+]
+
+ALERT_URGENCY_THRESHOLD = 3.5
+WEEKLY_REPORT_DAY       = "friday"
+WEEKLY_REPORT_HOUR      = "09:00"
+HOURLY_CHECK_INTERVAL   = 60
+
+DATA_FILE   = "jobs_cache.json"
+ALERTS_FILE = "alerts_history.json"`},
+
+  "searchers/base.py": {"lang":"python","code":`"""Base searcher and Job data model."""
+from dataclasses import dataclass, field
+from datetime import datetime
+from typing import Optional
+import hashlib
+
+
+@dataclass
+class Job:
+    title: str
+    company: str
+    location: str
+    description: str
+    url: str
+    source: str
+    published_at: Optional[datetime] = None
+    salary: Optional[str] = None
+    tags: list = field(default_factory=list)
+    tier: Optional[str] = None
+    urgency_score: float = 0.0
+    is_senior: bool = False
+
+    @property
+    def id(self) -> str:
+        raw = f"{self.title}|{self.company}|{self.url}"
+        return hashlib.md5(raw.encode()).hexdigest()[:12]
+
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id, "title": self.title, "company": self.company,
+            "location": self.location, "description": self.description[:500],
+            "url": self.url, "source": self.source,
+            "published_at": self.published_at.isoformat() if self.published_at else None,
+            "salary": self.salary, "tags": self.tags,
+            "tier": self.tier, "urgency_score": self.urgency_score,
+            "is_senior": self.is_senior,
+        }
+
+
+class BaseSearcher:
+    source_name: str = "unknown"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+                      "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept-Language": "he-IL,he;q=0.9,en-US;q=0.8,en;q=0.7",
+    }
+
+    def search(self, keywords: list[str], location: str = "Israel") -> list[Job]:
+        raise NotImplementedError
+
+    def _clean_text(self, text: str) -> str:
+        if not text: return ""
+        return " ".join(text.split()).strip()`},
+
+  "classifiers/seniority.py": {"lang":"python","code":`"""Classify job seniority level and compute urgency score."""
+import re
+from searchers.base import Job
+
+SENIOR_PATTERNS = [
+    r'\\bsenior\\b', r'\\blead\\b', r'\\bprincipal\\b', r'\\bstaff\\b',
+    r'\\bhead of\\b', r'\\bchief\\b', r'\\bdirector\\b', r'\\barchitect\\b',
+    r'\\bmanager\\b', r'\\bvp\\b',
+    r'בכיר', r'מוביל', r'ראש', r'מנהל',
+]
+
+SPECIALITY_SCORES = {
+    "llm": 0.5, "generative ai": 0.5, "genai": 0.5,
+    "rag": 0.4, "computer vision": 0.4,
+    "nlp": 0.3, "mlops": 0.3, "deep learning": 0.3,
+    "transformer": 0.3, "fine.?tun": 0.3,
+    "agent": 0.2, "prompt engineering": 0.2,
+    "vector db": 0.2, "embedding": 0.2,
+}
+
+
+class SeniorityClassifier:
+    def classify(self, job: Job) -> Job:
+        text = f"{job.title} {job.description}".lower()
+        job.is_senior = any(re.search(p, text) for p in SENIOR_PATTERNS)
+
+        base  = 2.0 if job.is_senior else 1.0
+        bonus = min(sum(s for p, s in SPECIALITY_SCORES.items()
+                        if re.search(p, text)), 2.0)
+
+        recency = 0.0
+        if job.published_at:
+            from datetime import datetime, timezone
+            pub = job.published_at.replace(tzinfo=timezone.utc) \
+                  if job.published_at.tzinfo is None else job.published_at
+            recency = max(0.0, 0.5 - (datetime.now(timezone.utc) - pub).days * 0.1)
+
+        job.urgency_score = round(min(base + bonus + recency, 5.0), 1)
+        return job`},
+
+  "classifiers/bronze_silver_gold.py": {"lang":"python","code":`"""Bronze / Silver / Gold tier classifier."""
+import re
+from searchers.base import Job
+from config import FUNDED_COMPANIES, SENIOR_KEYWORDS
+
+GROWTH_COMPANIES = {
+    "gong", "ai21", "lemonade", "monday", "wiz", "snyk",
+    "aqua security", "cato", "armis", "cybereason", "nvidia",
+    "mobileye", "deloitte", "booking", "intuit", "palo alto",
+    "jfrog", "uveye", "sensi", "anyword", "cyabra", "automat",
+}
+
+GOLD_SIGNAL_PATTERNS = [
+    r'series\\s+[abcde]', r'seed\\s+round', r'recently\\s+raised',
+    r'founding\\s+(engineer|team)', r'building\\s+from\\s+scratch',
+    r'new\\s+(r&d|research)\\s+center', r'expanding\\s+(team|operations)',
+    r'stealth\\s+mode', r'backed\\s+by',
+    r'גיוס\\s+הון', r'מרכז\\s+פיתוח\\s+חדש',
+]
+
+SILVER_SIGNAL_PATTERNS = [
+    r'hybrid', r'remote.?first', r'fast.?growing', r'scale.?up',
+    r'growing\\s+team', r'mission.?driven',
+]
+
+
+class BSGClassifier:
+    def classify(self, job: Job) -> Job:
+        text    = f"{job.title} {job.company} {job.description}".lower()
+        company = job.company.lower()
+
+        gold_hits     = sum(1 for p in GOLD_SIGNAL_PATTERNS if re.search(p, text))
+        is_funded     = any(fc in company for fc in FUNDED_COMPANIES)
+        is_founding   = bool(re.search(r'founding|first\\s+\\w+\\s+hire|build\\s+from', text))
+
+        if gold_hits >= 2 or is_founding or (is_funded and job.is_senior):
+            job.tier = "Gold"
+            job.urgency_score = min(job.urgency_score + 0.5, 5.0)
+            return job
+
+        is_growth   = any(gc in company for gc in GROWTH_COMPANIES)
+        silver_hits = sum(1 for p in SILVER_SIGNAL_PATTERNS if re.search(p, text))
+        is_senior   = job.is_senior or any(
+            re.search(rf'\\b{k}\\b', text) for k in SENIOR_KEYWORDS)
+
+        if is_growth or silver_hits >= 2 or (is_senior and is_funded):
+            job.tier = "Silver"
+            job.urgency_score = min(job.urgency_score + 0.3, 5.0)
+            return job
+
+        job.tier = "Bronze"
+        return job`},
+
+  "webapp/server.py": {"lang":"python","code":`"""Flask web application — AI Job Search dashboard."""
+import sys, os, json, threading, csv, io
+from datetime import datetime
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
+from flask import Flask, render_template, jsonify, request, Response, stream_with_context
+from config import AI_KEYWORDS, DATA_FILE
+from searchers import DrushimSearcher, IndeedSearcher, RSSSearcher
+from classifiers import BSGClassifier, SeniorityClassifier
+from signals import FundingSignalDetector, MarketSignalAnalyzer
+
+app = Flask(__name__)
+
+_state = {"scanning":False,"last_scan":None,"jobs":[],"funding":[],"analysis":{},"log":[]}
+_lock  = threading.Lock()
+
+def _log(msg):
+    with _lock: _state["log"].append(msg)
+
+def _run_scan():
+    with _lock: _state["scanning"] = True; _state["log"] = []
+    sc, bc, jobs = SeniorityClassifier(), BSGClassifier(), []
+    for label, searcher in [("drushim.co.il", DrushimSearcher()),
+                             ("indeed.com",    IndeedSearcher()),
+                             ("RSS",           RSSSearcher())]:
+        _log(f"📡 סורק {label}…")
+        try:
+            fetched = searcher.search(AI_KEYWORDS)
+            for j in fetched: sc.classify(j); bc.classify(j)
+            jobs.extend(fetched)
+            _log(f"✅ {label}: {len(fetched)} jobs")
+        except Exception as e: _log(f"⚠️ {label}: {e}")
+
+    seen = {j.id: j for j in jobs}
+    jobs = list(seen.values())
+    try:
+        funding = FundingSignalDetector().scan()
+    except Exception: funding = []
+    analysis = MarketSignalAnalyzer().analyze(jobs, funding)
+    now = datetime.now().isoformat()
+    with _lock:
+        _state.update(jobs=[j.to_dict() for j in jobs],
+                      funding=[f.to_dict() for f in funding],
+                      analysis=analysis, last_scan=now, scanning=False)
+    _log("📊 Done!")
+
+@app.route("/"); def index(): return render_template("index.html")
+@app.route("/api/scan", methods=["POST"])
+def api_scan():
+    with _lock:
+        if _state["scanning"]: return jsonify({"status":"already_running"}),409
+    threading.Thread(target=_run_scan, daemon=True).start()
+    return jsonify({"status":"started"})
+
+# … see full source in webapp/server.py
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5050))
+    app.run(host="0.0.0.0", port=port, debug=False)`},
+};
+
+const FILE_NAMES = Object.keys(FILES);
+let activeFile = FILE_NAMES[0];
+
+// ── build file picker ────────────────────────────────────────────────
+const fileList = document.getElementById('file-list');
+FILE_NAMES.forEach(name => {
+  const el = document.createElement('div');
+  el.className = 'file-pill px-3 py-1.5 rounded-lg text-xs font-mono text-gray-400 ' +
+                 (name === activeFile ? 'active' : '');
+  el.textContent = name;
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.file-pill').forEach(p=>p.classList.remove('active'));
+    el.classList.add('active');
+    activeFile = name;
+    showFile(name);
+  });
+  fileList.appendChild(el);
+});
+
+function showFile(name) {
+  const f = FILES[name];
+  document.getElementById('file-name').textContent = name;
+  const el = document.getElementById('code-content');
+  el.className = `language-${f.lang}`;
+  el.textContent = f.code;
+  hljs.highlightElement(el);
+}
+showFile(activeFile);
+
+function copyCode() {
+  navigator.clipboard.writeText(FILES[activeFile].code)
+    .then(() => {
+      const btn = document.querySelector('[onclick="copyCode()"]');
+      btn.textContent = 'Copied!';
+      setTimeout(()=>btn.textContent='Copy',1500);
+    });
+}
+
+// ── tabs ─────────────────────────────────────────────────────────────
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b=>{
+      b.classList.remove('active');
+      b.classList.add('text-gray-400');
+    });
+    document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    btn.classList.remove('text-gray-400');
+    document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+  });
+});
+
+// ── highlight on load ─────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());
+</script>
+</body>
+</html>
