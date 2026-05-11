@@ -626,6 +626,13 @@
       "path": "skills/productivity/project-planner.md"
     },
     {
+      "name": "fix-my-business",
+      "description": "Guided business diagnostic for small business owners — 10-question interview, AI-powered plain-language action plan in small steps",
+      "category": "productivity",
+      "tags": ["business", "diagnosis", "small-business", "ai-tools", "action-plan", "hebrew", "עסק"],
+      "path": "skills/productivity/fix-my-business.md"
+    },
+    {
       "name": "sparc-analyzer",
       "description": "SPARC Analyzer mode — analyze codebases, architecture, and systems for patterns, issues, and improvements",
       "category": "sparc",
