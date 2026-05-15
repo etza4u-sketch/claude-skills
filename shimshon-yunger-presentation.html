@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שמשון יונגר — ליווי לחולי סוכרת</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Assistant', Arial, sans-serif;
+      background: #f5f5f5;
+      color: #1a1a1a;
+      direction: rtl;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 20px auto;
+      background: white;
+      padding: 40px 50px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      page-break-after: always;
+    }
+
+    /* ===== COVER PAGE ===== */
+    .cover {
+      background: linear-gradient(145deg, #1a4a2e 0%, #2d7a4f 60%, #3a9e68 100%);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      min-height: 297mm;
+      padding: 60px 50px;
+    }
+
+    .cover .tag {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.4);
+      border-radius: 50px;
+      padding: 8px 24px;
+      font-size: 14px;
+      letter-spacing: 1px;
+      margin-bottom: 40px;
+    }
+
+    .cover h1 {
+      font-size: 52px;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    .cover h1 span {
+      color: #a8e6c1;
+    }
+
+    .cover .subtitle {
+      font-size: 22px;
+      font-weight: 300;
+      opacity: 0.9;
+      margin-bottom: 50px;
+      line-height: 1.6;
+    }
+
+    .cover .divider {
+      width: 60px;
+      height: 3px;
+      background: #a8e6c1;
+      margin: 0 auto 50px;
+    }
+
+    .cover .stats {
+      display: flex;
+      gap: 60px;
+      justify-content: center;
+    }
+
+    .cover .stat {
+      text-align: center;
+    }
+
+    .cover .stat .number {
+      font-size: 48px;
+      font-weight: 800;
+      color: #a8e6c1;
+      line-height: 1;
+    }
+
+    .cover .stat .label {
+      font-size: 14px;
+      opacity: 0.8;
+      margin-top: 6px;
+    }
+
+    .cover .name {
+      margin-top: 60px;
+      font-size: 18px;
+      opacity: 0.7;
+      border-top: 1px solid rgba(255,255,255,0.3);
+      padding-top: 20px;
+      width: 100%;
+      text-align: center;
+    }
+
+    /* ===== SECTION HEADER ===== */
+    .section-header {
+      background: linear-gradient(135deg, #1a4a2e, #2d7a4f);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-bottom: 30px;
+      display: inline-block;
+    }
+
+    h2 {
+      font-size: 34px;
+      font-weight: 800;
+      color: #1a4a2e;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a4a2e;
+      margin-bottom: 12px;
+    }
+
+    p {
+      font-size: 16px;
+      line-height: 1.8;
+      color: #333;
+      margin-bottom: 16px;
+    }
+
+    /* ===== ABOUT PAGE ===== */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-top: 30px;
+    }
+
+    .quote-block {
+      background: #f0f8f4;
+      border-right: 5px solid #2d7a4f;
+      padding: 24px 28px;
+      border-radius: 0 12px 12px 0;
+      margin: 24px 0;
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a4a2e;
+      line-height: 1.6;
+    }
+
+    .bullet-list {
+      list-style: none;
+      margin: 16px 0;
+    }
+
+    .bullet-list li {
+      padding: 8px 0 8px 0;
+      font-size: 16px;
+      color: #333;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .bullet-list li::before {
+      content: "✦";
+      color: #2d7a4f;
+      font-size: 12px;
+      margin-top: 4px;
+      flex-shrink: 0;
+    }
+
+    /* ===== SERVICES PAGE ===== */
+    .services-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 24px;
+    }
+
+    .service-card {
+      background: #f9fffe;
+      border: 1.5px solid #c8eedd;
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    .service-card .icon {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .service-card h3 {
+      font-size: 17px;
+      margin-bottom: 8px;
+    }
+
+    .service-card p {
+      font-size: 14px;
+      color: #555;
+      margin: 0;
+    }
+
+    /* ===== COMPARISON TABLE ===== */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 24px;
+      font-size: 15px;
+    }
+
+    th {
+      background: #1a4a2e;
+      color: white;
+      padding: 14px 20px;
+      text-align: right;
+      font-weight: 600;
+    }
+
+    th:first-child { border-radius: 0 8px 0 0; }
+    th:last-child { border-radius: 8px 0 0 0; }
+
+    td {
+      padding: 12px 20px;
+      border-bottom: 1px solid #e8e8e8;
+      color: #333;
+    }
+
+    tr:nth-child(even) td { background: #f8fffe; }
+
+    td:first-child { color: #888; }
+    td:last-child { color: #1a4a2e; font-weight: 600; }
+
+    /* ===== POST PAGES ===== */
+    .post-card {
+      background: white;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 16px;
+      padding: 32px 36px;
+      margin-bottom: 30px;
+      position: relative;
+    }
+
+    .post-card .post-label {
+      position: absolute;
+      top: -12px;
+      right: 24px;
+      background: #2d7a4f;
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 16px;
+      border-radius: 50px;
+    }
+
+    .post-card .post-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #1a1a1a;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .post-card .post-body {
+      font-size: 15px;
+      line-height: 1.9;
+      color: #333;
+      white-space: pre-line;
+    }
+
+    .post-card .post-cta {
+      margin-top: 20px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #2d7a4f;
+    }
+
+    .keyword {
+      background: #e8f7ee;
+      color: #1a4a2e;
+      font-weight: 700;
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    /* ===== CTA PAGE ===== */
+    .cta-page {
+      background: linear-gradient(145deg, #1a4a2e, #2d7a4f);
+      color: white;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 297mm;
+    }
+
+    .cta-page h2 {
+      font-size: 42px;
+      color: white;
+      margin-bottom: 16px;
+    }
+
+    .cta-page .sub {
+      font-size: 20px;
+      opacity: 0.85;
+      margin-bottom: 50px;
+      line-height: 1.7;
+    }
+
+    .cta-checklist {
+      list-style: none;
+      text-align: right;
+      margin-bottom: 50px;
+    }
+
+    .cta-checklist li {
+      font-size: 18px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .cta-checklist li::before {
+      content: "✓";
+      color: #a8e6c1;
+      font-weight: 800;
+      font-size: 20px;
+    }
+
+    .cta-btn {
+      background: white;
+      color: #1a4a2e;
+      font-size: 20px;
+      font-weight: 800;
+      padding: 18px 48px;
+      border-radius: 50px;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+
+    .cta-note {
+      font-size: 13px;
+      opacity: 0.6;
+    }
+
+    @media print {
+      body { background: white; }
+      .page { margin: 0; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PAGE 1: COVER -->
+  <div class="page cover">
+    <div class="tag">ליווי אישי לחולי סוכרת</div>
+    <h1>44 שנה עם סוכרת.<br><span>לא שורד — מנהל.</span></h1>
+    <p class="subtitle">אם אתה חי עם סוכרת סוג 2 ומחפש איזון סוכר בדם אמיתי —<br>אתה במקום הנכון.</p>
+    <div class="divider"></div>
+    <div class="stats">
+      <div class="stat">
+        <div class="number">44</div>
+        <div class="label">שנות חיים עם סוכרת</div>
+      </div>
+      <div class="stat">
+        <div class="number">40+</div>
+        <div class="label">שנות ליווי וניסיון</div>
+      </div>
+      <div class="stat">
+        <div class="number">71</div>
+        <div class="label">חי ומנהל בשליטה</div>
+      </div>
+    </div>
+    <div class="name">שמשון יונגר | מאסטר NLP | מלווה סוכרתיים</div>
+  </div>
+
+  <!-- PAGE 2: ABOUT -->
+  <div class="page">
+    <div class="section-header">אודות</div>
+    <h2>שמשון יונגר —<br>חיים עם סוכרת בשליטה</h2>
+
+    <p>אני שמשון, בן 71. <strong>44 שנה</strong> חי עם סוכרת. <strong>למעלה מ־40 שנה</strong> מלווה סוכרתיים ומשפחותיהם. לא מספרים. לא תיאוריות. מהשטח.</p>
+
+    <h3 style="margin-top:28px;">הסיפור שלי — כי הוא גם הסיפור שלך</h3>
+    <p>בגיל 32 הייתי בדיוק איפה שאתה אולי נמצא עכשיו: בלבול. קפיצות סוכר. עייפות שלא עוברת. ותחושה שהסוכרת שולטת בך — לא אתה בה.</p>
+    <p>ואז הגיעה ההבנה שסידרה הכול:</p>
+
+    <div class="quote-block">
+      "אף אחד לא ינהל בשבילי את הסוכרת.<br>או שאני לוקח שליטה — או שאני נסחף."
+    </div>
+
+    <p>מאותו רגע התחיל מסע של למידה עמוקה:</p>
+    <ul class="bullet-list">
+      <li>מה זו סוכרת באמת, מתחת לפני השטח</li>
+      <li>איך תזונה לחולי סוכרת יכולה להיות חיה, טעימה ומשחררת</li>
+      <li>איך הורדת סוכר טבעית מתרחשת כשמבינים את הגוף</li>
+      <li>איך הראש, ההרגלים והבחירות היומיומיות מכתיבים את כל המשחק</li>
+    </ul>
+    <p>הפכתי למאסטר וטריינר NLP — כי הבנתי ש<strong>אורח חיים בריא</strong> מתחיל תמיד במחשבה.</p>
+  </div>
+
+  <!-- PAGE 3: SERVICES -->
+  <div class="page">
+    <div class="section-header">שירותים</div>
+    <h2>ליווי אישי לחולי סוכרת</h2>
+    <p><strong>לא כל יועץ מבין מה זה לחיות עם סוכרת 24/7.</strong> אני כן.</p>
+
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="icon">🎯</div>
+        <h3>אימון אישי מותאם</h3>
+        <p>מותאם לרמת הסוכר, לגוף ולאורח החיים הספציפי שלך — לא עצות גנריות.</p>
+      </div>
+      <div class="service-card">
+        <div class="icon">🌿</div>
+        <h3>הורדת סוכר טבעית</h3>
+        <p>כלים פרקטיים לאיזון סוכר בדם — בלא תרופות מיותרות, עם הבנה עמוקה.</p>
+      </div>
+      <div class="service-card">
+        <div class="icon">🍽️</div>
+        <h3>תזונה לחולי סוכרת</h3>
+        <p>תפריט שאפשר לחיות איתו — לא רק להגביל, אלא לאכול חיים וטוב.</p>
+      </div>
+      <div class="service-card">
+        <div class="icon">🧠</div>
+        <h3>NLP ורפואה משלימה</h3>
+        <p>שילוב של כלים מנטליים עם הטיפול הרפואי הקיים — גוף וראש יחד.</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top:36px;">מה מייחד את הגישה שלי?</h3>
+    <table>
+      <tr>
+        <th>גישה שגרתית</th>
+        <th>הגישה שלי</th>
+      </tr>
+      <tr>
+        <td>עצות גנריות מהאינטרנט</td>
+        <td>ניסיון 44 שנה מהחיים עצמם</td>
+      </tr>
+      <tr>
+        <td>תזונה מגבילה ומתסכלת</td>
+        <td>תזונה שאפשר לחיות איתה</td>
+      </tr>
+      <tr>
+        <td>מדדים בלי הקשר</td>
+        <td>הבנת הגוף, הראש ואורח החיים כמכלול</td>
+      </tr>
+      <tr>
+        <td>הכל רפואי, כלום אנושי</td>
+        <td>רפואה משלימה + קשר אישי + כלים מנטליים</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- PAGE 4: POSTS 1-2 -->
+  <div class="page">
+    <div class="section-header">פוסטים לרשתות חברתיות</div>
+    <h2>תוכן לפרסום</h2>
+
+    <div class="post-card" style="margin-top:30px;">
+      <div class="post-label">פוסט 1 — הכרת הכאב</div>
+      <div class="post-title">44 שנה עם סוכרת לימדו אותי דבר אחד:</div>
+      <div class="post-body">הבעיה הגדולה ביותר של חולי סוכרת סוג 2 היא לא הסוכר.
+היא חוסר השליטה.
+
+הפחד מהמדד הבא.
+הלחץ מארוחת השבת.
+הבושה כשה"דיאטה" נכשלת שוב.
+
+<strong>איזון סוכר בדם</strong> אמיתי מתחיל כשמפסיקים לפחד — ומתחילים להבין.
+
+אני שמשון, ואני כאן כדי ללמד אותך בדיוק את זה.</div>
+      <div class="post-cta">👇 כתוב לי "רוצה להבין" בתגובות ואשלח לך משהו שיפתח לך את הראש.</div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-label">פוסט 2 — תזונה</div>
+      <div class="post-title">3 הטעויות הנפוצות ביותר בתזונה לחולי סוכרת:</div>
+      <div class="post-body">❌ לא אוכלים פחמימות בכלל → הגוף מגיב בהיפו מפתיע
+❌ אוכלים "בריא" בלי לבדוק את השפעת הסוכר בפועל
+❌ אוכלים לפי שעות קבועות בלי לשים לב לפעילות הגופנית
+
+✅ <strong>הורדת סוכר טבעית</strong> קורית כשמבינים את הגוף שלך ספציפית — לא עצות גנריות מהאינטרנט.
+
+בתוכנית הליווי האישית שלי נבנה יחד תפריט שעובד בשבילך — ושאתה יכול לחיות איתו.</div>
+      <div class="post-cta">📩 לפרטים — DM או לינק בביו.</div>
+    </div>
+  </div>
+
+  <!-- PAGE 5: POSTS 3-5 -->
+  <div class="page">
+    <div class="post-card" style="margin-top:10px;">
+      <div class="post-label">פוסט 3 — NLP / מנטל</div>
+      <div class="post-title">האמת שרוב הרופאים לא יגידו לך:</div>
+      <div class="post-body"><strong>אורח חיים בריא</strong> לחולי סוכרת מתחיל <strong>בראש</strong> — לא בצלחת.
+
+כשהמחשבה שלך היא "אני חולה ואני צריך להגביל את עצמי" —
+הגוף מגיב בדחק, קורטיזול, וסוכר גבוה.
+
+כשהמחשבה שלך היא "אני מנהל את הגוף שלי ואני יכול לאכול חיים" —
+הכל משתנה.
+
+כמאסטר NLP ו־44 שנות ניסיון עם סוכרת, אני מלמד <strong>ליווי לחולי סוכרת</strong> שמשלב גוף וראש יחד.
+
+כי אחד בלי השני — לא עובד.</div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-label">פוסט 4 — סיפור אישי</div>
+      <div class="post-title">בגיל 32 הסוכרת ניהלה אותי. בגיל 71 — אני מנהל אותה.</div>
+      <div class="post-body">ביניהן? 44 שנה של למידה, ניסוי, כשלון, חזרה, ושיפור.
+
+היום אני מטייל. אוכל טוב. חי חופשי.
+לא בגלל <strong>ריפוי בסוכרת</strong> מאגדה — אלא בגלל הבנה, שיטה, ועקביות.
+
+ואת אותה שיטה אני מלמד בתוכנית <strong>האימון האישי</strong> שלי.
+
+האם גם אתה מוכן לעבור מ"שורד" ל"מנהל"?</div>
+      <div class="post-cta">👇 כתוב לי בתגובות.</div>
+    </div>
+
+    <div class="post-card">
+      <div class="post-label">פוסט 5 — רפואה משלימה</div>
+      <div class="post-title">תרופות + שינוי אורח חיים = תוצאות.</div>
+      <div class="post-body"><strong>רפואה משלימה</strong> לסוכרת לא אומרת לזרוק את הטיפול הרפואי מהחלון.
+זה אומר לשלב אותו עם:
+• תזונה מדויקת
+• פעילות גופנית חכמה
+• ניהול מתח ולחץ
+• הבנת הגוף שלך מבפנים
+
+<strong>הורדת סוכר טבעית</strong> היא תוצאה — לא קסם.
+היא קורית כשכל הכלים עובדים ביחד.</div>
+      <div class="post-cta">רוצה ללמוד איך? 📩</div>
+    </div>
+  </div>
+
+  <!-- PAGE 6: CTA -->
+  <div class="page cta-page">
+    <h2>מוכן להפסיק לרוץ<br>אחרי המדדים?</h2>
+    <p class="sub">44 שנות ניסיון אישי. למעלה מ־40 שנות ליווי.<br>הגיע הזמן שגם אתה תחיה עם סוכרת — לא תחת סוכרת.</p>
+
+    <ul class="cta-checklist">
+      <li>נבין מה המצב שלך כרגע</li>
+      <li>נמפה מה מונע ממך להגיע לאיזון</li>
+      <li>נבנה מסלול מותאם אישית עבורך</li>
+    </ul>
+
+    <div class="cta-btn">לקביעת שיחת היכרות חינמית ←</div>
+    <div class="cta-note">ללא התחייבות. ללא לחץ. עם ניסיון של 44 שנה.</div>
+  </div>
+
+</body>
+</html>
