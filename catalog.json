@@ -423,6 +423,13 @@
       "path": "skills/marketing/copywriting.md"
     },
     {
+      "name": "personal-brand-copy",
+      "description": "Generate a complete personal brand copywriting package from an About section — hero, about page, services, 5 social posts, landing page CTA, SEO meta tags, and a printable HTML file",
+      "category": "marketing",
+      "tags": ["copywriting", "personal-brand", "social-posts", "landing-page", "coach", "consultant", "about-page", "seo", "html"],
+      "path": "skills/marketing/personal-brand-copy.md"
+    },
+    {
       "name": "email-sequence",
       "description": "Email drip campaign builder for welcome series, nurture sequences, and re-engagement flows",
       "category": "marketing",
@@ -1085,7 +1092,7 @@
     {
       "name": "marketing",
       "description": "All marketing skills — SEO, copy, ads, email, CRO, analytics, social, and growth",
-      "skills": ["ab-test-setup", "ad-creative", "ai-seo", "analytics-tracking", "churn-prevention", "cold-email", "competitor-alternatives", "competitor-analysis", "content-strategy", "copy-editing", "copywriting", "email-sequence", "form-cro", "free-tool-strategy", "landing-page-cro", "launch-strategy", "lead-magnets", "marketing-ideas", "marketing-psychology", "onboarding-cro", "page-cro", "paid-ads", "paywall-upgrade-cro", "popup-cro", "pricing-strategy", "product-marketing-context", "programmatic-seo", "referral-program", "revops", "sales-enablement", "schema-markup", "seo-audit", "signup-flow-cro", "site-architecture", "social-content"]
+      "skills": ["ab-test-setup", "ad-creative", "ai-seo", "analytics-tracking", "churn-prevention", "cold-email", "competitor-alternatives", "competitor-analysis", "content-strategy", "copy-editing", "copywriting", "email-sequence", "personal-brand-copy", "form-cro", "free-tool-strategy", "landing-page-cro", "launch-strategy", "lead-magnets", "marketing-ideas", "marketing-psychology", "onboarding-cro", "page-cro", "paid-ads", "paywall-upgrade-cro", "popup-cro", "pricing-strategy", "product-marketing-context", "programmatic-seo", "referral-program", "revops", "sales-enablement", "schema-markup", "seo-audit", "signup-flow-cro", "site-architecture", "social-content"]
     },
     {
       "name": "advertising",
