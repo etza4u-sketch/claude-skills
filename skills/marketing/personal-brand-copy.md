@@ -1,15 +1,15 @@
 ---
 name: personal-brand-copy
-description: Generate a complete personal brand copywriting package from an "About" section — hero, about page, services, 5 social posts, landing page CTA, SEO meta tags, and a printable HTML presentation. Optimized for coaches, consultants, therapists, and personal brands.
+description: Generate a complete personal brand copywriting package from an "About" section — hero, about page, services, 5 social posts, landing page CTA, SEO meta tags, and an interactive AI-powered mini-site with a live chat widget powered by the Claude API. Optimized for coaches, consultants, therapists, and personal brands.
 category: marketing
-tags: [copywriting, personal-brand, social-posts, landing-page, hebrew, coach, consultant, about-page, seo, html]
+tags: [copywriting, personal-brand, social-posts, landing-page, coach, consultant, about-page, seo, html, ai-chat, mini-site, interactive]
 author: claude-skills
-version: 1.0.0
+version: 2.0.0
 ---
 
-# Personal Brand Copywriting
+# Personal Brand Copywriting — Interactive AI Mini-Site
 
-You are an expert personal brand copywriter. Your job is to take a raw "About" section and a list of keywords, then generate a full, conversion-ready copywriting package.
+You are an expert personal brand copywriter and web developer. Your job is to take a raw "About" section and a list of keywords, then generate a full conversion-ready copywriting package **and** a complete interactive mini-site HTML file with an AI chat widget powered by the Claude API.
 
 ---
 
@@ -136,26 +136,51 @@ Write:
 
 ---
 
-### 2.8 HTML Presentation File
+### 2.8 Interactive AI Mini-Site (HTML file)
 
-After generating all copy sections, create a complete, styled HTML file as `[first-name]-copywriting.html` that includes all the copy above in a printable, branded layout.
+After generating all copy sections, create a **complete single-file interactive mini-site** as `[first-name]-minisite.html`.
 
-**HTML requirements:**
-- RTL support if Hebrew, LTR for other languages
-- Google Font: Assistant (Hebrew) or Inter (other languages)
-- Color scheme: dark green `#1a4a2e` / medium green `#2d7a4f` / light accent `#a8e6c1` — or adapt to fit the person's field
-- 6 pages/sections:
-  1. Cover page with name, tagline, and 2–3 key stats (years of experience, etc.)
-  2. About page
-  3. Services + comparison table
-  4. Social posts (posts 1–3)
-  5. Social posts (posts 4–5)
-  6. Landing page CTA (full-page, dark background, white text)
-- `@media print` block so it exports cleanly to PDF via Ctrl+P
-- No external dependencies except the Google Font CDN import
+**Required sections (in order):**
+1. **Sticky nav** — name logo, section links, CTA button
+2. **Hero** — animated headline, stats (years of experience etc.), CTA scrolls to chat
+3. **About** — enhanced copy with quote block and bullet list
+4. **Services** — 2×2 card grid
+5. **Posts** — horizontal scroll carousel (5 posts)
+6. **AI Chat** — full chat widget (see spec below)
+7. **CTA** — dark gradient, checklist, big button
+8. **Footer**
+
+**AI Chat Widget spec:**
+- Header: avatar with person's initial, name, online dot (pulsing green)
+- API key input row (password field + Save button, stores to localStorage)
+- Messages area (380px, scroll, fade-in animations)
+- 4 suggestion chips (quick questions relevant to the person's niche)
+- Text input + send button
+- System prompt hardcoded in JS — contains the person's full persona:
+  - Name, age, years of experience
+  - Expertise areas (all keywords)
+  - Communication style (direct, warm, practical, no jargon)
+  - Answers in the detected language of the About section
+  - Always speaks from personal experience, not as a doctor/lawyer
+  - Responses: 3–6 sentences, at least one practical tip
+- API call: `fetch('https://api.anthropic.com/v1/messages')` with header `'anthropic-dangerous-direct-browser-calls': 'true'`
+- Model: `claude-haiku-4-5-20251001`
+- Max tokens: 400
+
+**Design requirements:**
+- RTL if Hebrew, LTR otherwise
+- Google Font: `Assistant` (Hebrew) or `Inter` (other)
+- Color scheme: derive 3 colors from the person's field:
+  - Coaches / health: dark green `#1a4a2e`, mid `#2d7a4f`, accent `#a8e6c1`
+  - Finance / law: dark navy `#1a2a4a`, mid `#2d4f7a`, accent `#a8c6e6`
+  - Wellness / therapy: deep purple `#2d1a4a`, mid `#5a2d7a`, accent `#d4a8e6`
+  - Business / sales: deep blue-gray `#1a2a3a`, mid `#2d4a5a`, accent `#a8d4e6`
+- Scroll-reveal animations (IntersectionObserver)
+- Fully responsive (mobile breakpoint at 640px)
+- No external JS libraries — vanilla only
 - Save the file in the current working directory
 
-Tell the user: "Open in Chrome → Ctrl+P → Save as PDF" to export.
+Tell the user: **"Open `[name]-minisite.html` in Chrome. Enter your Claude API key in the chat widget to activate the AI."**
 
 ---
 
@@ -185,4 +210,5 @@ Deliver in this order:
 5. `## Social Media Posts`
 6. `## Landing Page CTA`
 7. `## SEO Meta Tags`
-8. *(Create the HTML file and confirm the filename)*
+8. *(Create the interactive mini-site HTML file and confirm the filename)*
+9. Tell the user how to open it and activate the AI chat.
