@@ -369,7 +369,7 @@
     <div class="stat"><div class="num">40+</div><div class="lbl">שנות ליווי וניסיון</div></div>
     <div class="stat"><div class="num">71</div><div class="lbl">חי ומנהל בשליטה</div></div>
   </div>
-  <button class="hero-cta" onclick="document.getElementById('chat-section').scrollIntoView({behavior:'smooth'})">שאל את שמשון →</button>
+  <button class="hero-cta" onclick="document.getElementById('chat-section').scrollIntoView({behavior:'smooth'})">שאל את הבינה המלאכותית →</button>
 </section>
 
 <!-- ABOUT -->
@@ -494,16 +494,16 @@
 <!-- AI CHAT -->
 <section id="chat-section">
   <div class="container reveal">
-    <span class="section-tag">AI — שאל את שמשון</span>
-    <h2 style="margin-bottom:8px;">יש לך שאלה? שאל אותי ישירות.</h2>
-    <p class="lead" style="margin-bottom:32px;">44 שנות ניסיון — זמינות כאן, עכשיו. הכנס מפתח Claude API שלך וקבל תשובות בסגנון שמשון.</p>
+    <span class="section-tag">בינה מלאכותית</span>
+    <h2 style="margin-bottom:8px;">יש לך שאלה? שאל את הבינה המלאכותית.</h2>
+    <p class="lead" style="margin-bottom:32px;">קבל תשובות מיידיות על סוכרת, תזונה, איזון סוכר בדם ועוד. הכנס מפתח Claude API שלך כדי להפעיל.</p>
 
     <div class="chat-wrapper">
       <div class="chat-header">
-        <div class="chat-avatar">ש</div>
+        <div class="chat-avatar">AI</div>
         <div class="chat-header-text">
-          <h3>שמשון יונגר <span class="online-dot"></span></h3>
-          <p>מאסטר NLP | 44 שנה עם סוכרת | מלווה סוכרתיים</p>
+          <h3>עוזר AI <span class="online-dot"></span></h3>
+          <p>בינה מלאכותית מבוססת Claude | מומחה בנושא סוכרת ואורח חיים בריא</p>
         </div>
       </div>
 
@@ -514,7 +514,7 @@
       </div>
 
       <div class="messages" id="messages">
-        <div class="msg bot">שלום! אני שמשון. 44 שנה חי עם סוכרת, וכבר למעלה מ־40 שנה מלווה סוכרתיים. שאל אותי כל שאלה — אענה מהניסיון האמיתי שלי.</div>
+        <div class="msg bot">שלום! אני עוזר AI מבוסס Claude. אני כאן לענות על שאלות בנושא סוכרת, תזונה, איזון סוכר בדם, ואורח חיים בריא. במה אוכל לעזור?</div>
       </div>
 
       <div class="chat-suggestions" id="suggestions">
@@ -525,7 +525,7 @@
       </div>
 
       <div class="chat-input-row">
-        <input class="chat-input" id="userInput" type="text" placeholder="שאל את שמשון..." onkeydown="if(event.key==='Enter') sendMessage()" />
+        <input class="chat-input" id="userInput" type="text" placeholder="שאל את הבינה המלאכותית..." onkeydown="if(event.key==='Enter') sendMessage()" />
         <button class="send-btn" id="sendBtn" onclick="sendMessage()">↑</button>
       </div>
     </div>
@@ -553,10 +553,9 @@
 
 <script>
   // ===== SYSTEM PROMPT =====
-  const SYSTEM_PROMPT = `אתה שמשון יונגר, בן 71, מומחה לסוכרת עם 44 שנות ניסיון אישי חיים עם סוכרת וכ40 שנות ליווי סוכרתיים.
-אתה מאסטר וטריינר NLP. עונה תמיד בעברית, בסגנון ישיר, חם, פרקטי — ללא ז'רגון מיותר.
-תחומי המומחיות שלך: איזון סוכר בדם, תזונה לחולי סוכרת, הורדת סוכר טבעית, אורח חיים בריא, רפואה משלימה, ניהול סוכרת סוג 2, NLP לשינוי הרגלים.
-עונה מניסיון אישי, לא כרופא. תמיד ממליץ להתייעץ עם רופא לגבי תרופות.
+  const SYSTEM_PROMPT = `אתה עוזר AI מומחה בנושאי סוכרת ובריאות. עונה תמיד בעברית, בשפה ברורה, פרקטית וידידותית.
+תחומי המומחיות שלך: סוכרת סוג 2, איזון סוכר בדם, תזונה לחולי סוכרת, הורדת סוכר טבעית, אורח חיים בריא, רפואה משלימה, ניהול סוכרת, NLP לשינוי הרגלים.
+אינך רופא — תמיד ממליץ להתייעץ עם רופא לגבי תרופות ושינויים רפואיים.
 תשובות: 3-6 משפטים. ממוקדות. עם לפחות נקודה פרקטית אחת.`;
 
   // ===== API KEY =====
