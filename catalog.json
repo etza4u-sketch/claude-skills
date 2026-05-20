@@ -626,6 +626,13 @@
       "path": "skills/productivity/project-planner.md"
     },
     {
+      "name": "sleep-mindfulness",
+      "description": "Guide users toward mindful rest, conscious digital boundaries, and intentional evening routines to combat modern distraction and restore presence",
+      "category": "productivity",
+      "tags": ["sleep", "mindfulness", "wellbeing", "focus", "digital-detox", "evening-routine", "presence"],
+      "path": "skills/productivity/sleep-mindfulness.md"
+    },
+    {
       "name": "sparc-analyzer",
       "description": "SPARC Analyzer mode — analyze codebases, architecture, and systems for patterns, issues, and improvements",
       "category": "sparc",
