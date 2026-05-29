@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>מחוון סקרים פוליטיים 2026</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #242736;
+      --border: #2e3144;
+      --text: #e8eaf0;
+      --muted: #8b90a8;
+      --accent: #4f8ef7;
+      --green: #34d399;
+      --red: #f87171;
+      --yellow: #fbbf24;
+      --right-bloc: #3b82f6;
+      --left-bloc: #ec4899;
+      --arab-bloc: #10b981;
+      --radius: 10px;
+
+      /* Party colours */
+      --c-likud:     #1d4ed8;
+      --c-yeshAtid:  #0ea5e9;
+      --c-unity:     #16a34a;
+      --c-shas:      #991b1b;
+      --c-utj:       #1e293b;
+      --c-ib:        #ea580c;
+      --c-otzma:     #b91c1c;
+      --c-rz:        #d97706;
+      --c-labor:     #db2777;
+      --c-meretz:    #059669;
+      --c-raam:      #0d9488;
+      --c-joint:     #7c3aed;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      font-size: 14px;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    header h1 { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.3px; }
+    header h1 span { color: var(--accent); }
+    .header-meta { color: var(--muted); font-size: 0.82rem; display: flex; gap: 16px; align-items: center; }
+    .live-badge {
+      background: #16a34a22;
+      border: 1px solid #16a34a55;
+      color: var(--green);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* ── Layout ── */
+    main { padding: 20px 24px; display: flex; flex-direction: column; gap: 20px; max-width: 1400px; margin: 0 auto; }
+
+    /* ── KPI cards ── */
+    .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+    }
+    .kpi-label { color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .kpi-value { font-size: 2rem; font-weight: 700; line-height: 1; }
+    .kpi-sub { color: var(--muted); font-size: 0.8rem; margin-top: 6px; }
+    .kpi-delta { font-size: 0.78rem; margin-top: 4px; }
+    .up { color: var(--green); }
+    .down { color: var(--red); }
+
+    /* ── Chart row ── */
+    .chart-row { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .card-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+    .chart-wrap { position: relative; height: 280px; }
+
+    /* ── Coalition row ── */
+    .coalition-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    .bloc-bar-wrap { margin-top: 14px; }
+    .bloc-bar-label { display: flex; justify-content: space-between; font-size: 0.82rem; color: var(--muted); margin-bottom: 6px; }
+    .bloc-bar-track { background: var(--surface2); border-radius: 6px; height: 12px; overflow: hidden; display: flex; }
+    .bloc-bar-fill { height: 100%; border-radius: 6px 0 0 6px; transition: width 0.4s ease; }
+
+    .party-blocs { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+    .bloc-row { display: flex; align-items: center; gap: 10px; }
+    .bloc-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .bloc-name { flex: 1; font-size: 0.85rem; }
+    .bloc-seats { font-weight: 700; font-size: 1rem; }
+    .bloc-parties { color: var(--muted); font-size: 0.75rem; }
+    .majority-line {
+      border-top: 1px dashed var(--yellow);
+      margin: 10px 0;
+      position: relative;
+    }
+    .majority-line::after {
+      content: "61 — רוב";
+      position: absolute;
+      left: 0;
+      top: -9px;
+      background: var(--surface);
+      padding: 0 6px;
+      font-size: 0.7rem;
+      color: var(--yellow);
+    }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; margin-top: 4px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    thead th {
+      background: var(--surface2);
+      color: var(--muted);
+      text-align: center;
+      padding: 10px 8px;
+      font-weight: 600;
+      white-space: nowrap;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      border-bottom: 1px solid var(--border);
+    }
+    thead th:first-child { text-align: right; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: var(--surface2); }
+    tbody td { padding: 9px 8px; text-align: center; white-space: nowrap; }
+    tbody td:first-child { text-align: right; color: var(--muted); font-size: 0.78rem; }
+    tbody td:nth-child(2), tbody td:nth-child(3) { color: var(--muted); font-size: 0.78rem; }
+    .highlight-up { background: #16a34a22 !important; color: var(--green); font-weight: 700; border-radius: 4px; }
+    .highlight-down { background: #ef444422 !important; color: var(--red); font-weight: 700; border-radius: 4px; }
+    .avg-row td { background: #4f8ef711 !important; color: var(--accent); font-weight: 700; border-top: 2px solid var(--accent); }
+    .avg-row td:first-child { color: var(--accent); }
+
+    /* Party colour chips */
+    .party-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.78rem; white-space: nowrap;
+    }
+    .party-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .kpi-row { grid-template-columns: 1fr 1fr; }
+      .chart-row, .coalition-row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 500px) {
+      .kpi-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>מחוון <span>סקרים פוליטיים</span> 2026</h1>
+  <div class="header-meta">
+    <span id="last-updated"></span>
+    <span class="live-badge">● עדכני</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- KPI row -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-label">סקרים שנסרקו</div>
+      <div class="kpi-value" id="kpi-total">—</div>
+      <div class="kpi-sub">מינואר 2026</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">ליכוד — סקר אחרון</div>
+      <div class="kpi-value" id="kpi-likud" style="color:var(--c-likud)">—</div>
+      <div class="kpi-sub kpi-delta" id="kpi-likud-delta"></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">גוש ימין — סקר אחרון</div>
+      <div class="kpi-value" id="kpi-right" style="color:var(--right-bloc)">—</div>
+      <div class="kpi-sub" id="kpi-right-sub"></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">פער מרוב (61)</div>
+      <div class="kpi-value" id="kpi-gap">—</div>
+      <div class="kpi-sub" id="kpi-gap-sub"></div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="chart-row">
+    <div class="card">
+      <div class="card-title">מגמת מנדטים — 6 סקרים אחרונים</div>
+      <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">סקר אחרון — חלוקת מנדטים</div>
+      <div class="chart-wrap"><canvas id="latestChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Coalition -->
+  <div class="coalition-row">
+    <div class="card">
+      <div class="card-title">מחשבון קואליציה</div>
+      <div class="party-blocs" id="bloc-list"></div>
+      <div class="majority-line" style="margin-top:14px;"></div>
+      <div class="bloc-bar-wrap">
+        <div class="bloc-bar-label">
+          <span>גוש ימין <span id="right-pct"></span></span>
+          <span id="right-seats-label"></span>
+        </div>
+        <div class="bloc-bar-track">
+          <div class="bloc-bar-fill" id="right-bar" style="background:var(--right-bloc);"></div>
+          <div class="bloc-bar-fill" id="left-bar" style="background:var(--left-bloc);border-radius:0 6px 6px 0;"></div>
+        </div>
+        <div class="bloc-bar-label" style="margin-top:6px;">
+          <span></span>
+          <span>גוש שמאל/מרכז <span id="left-pct"></span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">ממוצע מתגלגל — 3 סקרים אחרונים</div>
+      <div class="chart-wrap" style="height:220px;"><canvas id="avgChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Full table -->
+  <div class="card">
+    <div class="card-title">טבלת כל הסקרים — שינוי >2 מנדטים מודגש</div>
+    <div class="table-wrap">
+      <table id="pollsTable">
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+// Columns: date, source, pollster, sample, ...party seats (12 parties)
+const PARTIES = [
+  { key: 'likud',   name: 'ליכוד',           color: '#1d4ed8' },
+  { key: 'ya',      name: 'יש עתיד',          color: '#0ea5e9' },
+  { key: 'unity',   name: 'מחנה ממלכתי',      color: '#16a34a' },
+  { key: 'shas',    name: 'שס',               color: '#991b1b' },
+  { key: 'utj',     name: 'יהדות התורה',      color: '#64748b' },
+  { key: 'ib',      name: 'ישראל ביתנו',      color: '#ea580c' },
+  { key: 'otzma',   name: 'עוצמה יהודית',     color: '#b91c1c' },
+  { key: 'rz',      name: 'הציונות הדתית',    color: '#d97706' },
+  { key: 'labor',   name: 'עבודה',             color: '#db2777' },
+  { key: 'meretz',  name: 'מרץ',              color: '#059669' },
+  { key: 'raam',    name: "רע\"מ",             color: '#0d9488' },
+  { key: 'joint',   name: "חד\"ש-תע\"ל",       color: '#7c3aed' },
+];
+
+// Right bloc: Likud + Shas + UTJ + Otzma + RZ
+const RIGHT_KEYS  = ['likud','shas','utj','otzma','rz'];
+// Centre/Left bloc: Yesh Atid + National Unity + Labor + Meretz
+const LEFT_KEYS   = ['ya','unity','labor','meretz'];
+// Arab parties
+const ARAB_KEYS   = ['raam','joint'];
+// Israel Beitenu is unaffiliated with either bloc
+const NEUTRAL_KEY = 'ib';
+
+const POLLS = [
+  { date:'15/01/2026', source:'ערוץ 12',     pollster:'מעלה מחקרים',  sample:500,  seats:{likud:28,ya:22,unity:16,shas:11,utj:8,ib:7,otzma:7,rz:5,labor:5,meretz:4,raam:4,joint:3} },
+  { date:'01/02/2026', source:'מעריב',        pollster:'לזר מחקרים',  sample:null, seats:{likud:30,ya:20,unity:15,shas:11,utj:8,ib:6,otzma:8,rz:5,labor:5,meretz:4,raam:4,joint:4} },
+  { date:'15/02/2026', source:'וואלה',        pollster:'פאנל ישראל',  sample:600,  seats:{likud:29,ya:21,unity:14,shas:12,utj:9,ib:6,otzma:9,rz:5,labor:5,meretz:4,raam:3,joint:3} },
+  { date:'01/03/2026', source:'ערוץ 13',     pollster:'גיאוקרטוגרפיה', sample:520, seats:{likud:31,ya:19,unity:13,shas:12,utj:9,ib:7,otzma:8,rz:6,labor:5,meretz:3,raam:4,joint:3} },
+  { date:'15/03/2026', source:'הארץ',         pollster:'דיאלוג',      sample:null, seats:{likud:30,ya:20,unity:14,shas:12,utj:8,ib:7,otzma:8,rz:6,labor:5,meretz:3,raam:4,joint:3} },
+  { date:'01/04/2026', source:'ynet',         pollster:'מידה',         sample:650,  seats:{likud:32,ya:18,unity:13,shas:13,utj:9,ib:6,otzma:9,rz:6,labor:4,meretz:4,raam:3,joint:3} },
+];
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+const latest = POLLS[POLLS.length - 1];
+const prev   = POLLS[POLLS.length - 2];
+
+function partyColor(key) { return PARTIES.find(p => p.key === key)?.color ?? '#888'; }
+function partyName(key)  { return PARTIES.find(p => p.key === key)?.name ?? key; }
+
+function rightBloc(poll) { return RIGHT_KEYS.reduce((s, k) => s + poll.seats[k], 0); }
+function leftBloc(poll)  { return LEFT_KEYS.reduce((s,  k) => s + poll.seats[k], 0); }
+function arabBloc(poll)  { return ARAB_KEYS.reduce((s,  k) => s + poll.seats[k], 0); }
+
+// ─── KPI CARDS ───────────────────────────────────────────────────────────────
+document.getElementById('last-updated').textContent = 'עודכן לאחרונה: ' + latest.date;
+document.getElementById('kpi-total').textContent = POLLS.length;
+
+const latestLikud = latest.seats.likud;
+const prevLikud   = prev.seats.likud;
+const likudDelta  = latestLikud - prevLikud;
+document.getElementById('kpi-likud').textContent = latestLikud;
+const deltaEl = document.getElementById('kpi-likud-delta');
+if (likudDelta !== 0) {
+  deltaEl.textContent = (likudDelta > 0 ? '▲ +' : '▼ ') + likudDelta + ' מסקר קודם';
+  deltaEl.className   = 'kpi-sub kpi-delta ' + (likudDelta > 0 ? 'up' : 'down');
+} else {
+  deltaEl.textContent = 'ללא שינוי מסקר קודם';
+  deltaEl.className = 'kpi-sub kpi-delta';
+}
+
+const rightSeats = rightBloc(latest);
+document.getElementById('kpi-right').textContent = rightSeats;
+document.getElementById('kpi-right-sub').textContent =
+  'ליכוד + שס + יהדות + עוצמה + הציונות';
+
+const gap = rightSeats - 61;
+const gapEl = document.getElementById('kpi-gap');
+gapEl.textContent = (gap >= 0 ? '+' : '') + gap;
+gapEl.style.color = gap >= 0 ? 'var(--green)' : 'var(--red)';
+document.getElementById('kpi-gap-sub').textContent =
+  gap >= 0 ? 'עודף מנדטים מעל הרוב' : 'מנדטים חסרים לרוב';
+
+// ─── TREND CHART ─────────────────────────────────────────────────────────────
+const labels = POLLS.map(p => p.date);
+const trendCtx = document.getElementById('trendChart').getContext('2d');
+
+// Show top 6 parties by latest seats
+const topParties = [...PARTIES]
+  .sort((a, b) => latest.seats[b.key] - latest.seats[a.key])
+  .slice(0, 6);
+
+new Chart(trendCtx, {
+  type: 'line',
+  data: {
+    labels,
+    datasets: topParties.map(p => ({
+      label: p.name,
+      data: POLLS.map(poll => poll.seats[p.key]),
+      borderColor: p.color,
+      backgroundColor: p.color + '22',
+      borderWidth: 2.5,
+      pointRadius: 4,
+      pointHoverRadius: 6,
+      tension: 0.35,
+      fill: false,
+    }))
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { color: '#8b90a8', font: { size: 11 }, padding: 12, boxWidth: 14 }
+      },
+      tooltip: {
+        mode: 'index',
+        intersect: false,
+        backgroundColor: '#1a1d27',
+        borderColor: '#2e3144',
+        borderWidth: 1,
+        titleColor: '#e8eaf0',
+        bodyColor: '#8b90a8',
+        callbacks: {
+          label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y} מנדטים`
+        }
+      }
+    },
+    scales: {
+      x: { ticks: { color: '#8b90a8', font: { size: 10 } }, grid: { color: '#2e3144' } },
+      y: {
+        ticks: { color: '#8b90a8', font: { size: 10 } },
+        grid: { color: '#2e3144' },
+        min: 0,
+        title: { display: true, text: 'מנדטים', color: '#8b90a8', font: { size: 10 } }
+      }
+    }
+  }
+});
+
+// ─── LATEST BAR CHART ────────────────────────────────────────────────────────
+const latestCtx = document.getElementById('latestChart').getContext('2d');
+const sortedParties = [...PARTIES].sort((a, b) => latest.seats[b.key] - latest.seats[a.key]);
+
+new Chart(latestCtx, {
+  type: 'bar',
+  data: {
+    labels: sortedParties.map(p => p.name),
+    datasets: [{
+      label: 'מנדטים',
+      data: sortedParties.map(p => latest.seats[p.key]),
+      backgroundColor: sortedParties.map(p => p.color + 'cc'),
+      borderColor: sortedParties.map(p => p.color),
+      borderWidth: 1,
+      borderRadius: 4,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#1a1d27',
+        borderColor: '#2e3144',
+        borderWidth: 1,
+        titleColor: '#e8eaf0',
+        bodyColor: '#8b90a8',
+        callbacks: { label: ctx => ` ${ctx.parsed.x} מנדטים` }
+      }
+    },
+    scales: {
+      x: {
+        ticks: { color: '#8b90a8', font: { size: 10 } },
+        grid: { color: '#2e3144' },
+        title: { display: true, text: 'מנדטים', color: '#8b90a8', font: { size: 10 } }
+      },
+      y: { ticks: { color: '#e8eaf0', font: { size: 10 } }, grid: { display: false } }
+    }
+  }
+});
+
+// ─── COALITION CALCULATOR ────────────────────────────────────────────────────
+const rightSeatsLatest = rightBloc(latest);
+const leftSeatsLatest  = leftBloc(latest);
+const arabSeatsLatest  = arabBloc(latest);
+const ibSeatsLatest    = latest.seats[NEUTRAL_KEY];
+
+const blocs = [
+  { label: 'גוש ימין',          parties: RIGHT_KEYS.map(k => partyName(k)).join(' + '), seats: rightSeatsLatest, color: 'var(--right-bloc)' },
+  { label: 'גוש שמאל/מרכז',   parties: LEFT_KEYS.map(k => partyName(k)).join(' + '),  seats: leftSeatsLatest,  color: 'var(--left-bloc)' },
+  { label: 'מפלגות ערביות',    parties: ARAB_KEYS.map(k => partyName(k)).join(' + '), seats: arabSeatsLatest,  color: 'var(--arab-bloc)' },
+  { label: 'ישראל ביתנו',       parties: 'ישראל ביתנו (לא מזדהה)',                     seats: ibSeatsLatest,    color: '#ea580c' },
+];
+
+const blocListEl = document.getElementById('bloc-list');
+blocs.forEach(b => {
+  const row = document.createElement('div');
+  row.className = 'bloc-row';
+  row.innerHTML = `
+    <span class="bloc-dot" style="background:${b.color}"></span>
+    <span class="bloc-name">${b.label}<br><span class="bloc-parties">${b.parties}</span></span>
+    <span class="bloc-seats" style="color:${b.color}">${b.seats}</span>
+  `;
+  blocListEl.appendChild(row);
+});
+
+const rightPct = Math.round((rightSeatsLatest / 120) * 100);
+const leftPct  = Math.round((leftSeatsLatest  / 120) * 100);
+document.getElementById('right-bar').style.width = rightPct + '%';
+document.getElementById('left-bar').style.width  = leftPct  + '%';
+document.getElementById('right-pct').textContent = `(${rightPct}%)`;
+document.getElementById('left-pct').textContent  = `(${leftPct}%)`;
+document.getElementById('right-seats-label').textContent = rightSeatsLatest + ' מנדטים';
+
+// ─── ROLLING AVERAGE CHART ───────────────────────────────────────────────────
+const last3 = POLLS.slice(-3);
+const avgSeats = {};
+PARTIES.forEach(p => {
+  const sum = last3.reduce((s, poll) => s + poll.seats[p.key], 0);
+  avgSeats[p.key] = Math.round((sum / 3) * 10) / 10;
+});
+
+const avgSorted = [...PARTIES].sort((a, b) => avgSeats[b.key] - avgSeats[a.key]);
+const avgCtx = document.getElementById('avgChart').getContext('2d');
+new Chart(avgCtx, {
+  type: 'bar',
+  data: {
+    labels: avgSorted.map(p => p.name),
+    datasets: [{
+      label: 'ממוצע 3 סקרים',
+      data: avgSorted.map(p => avgSeats[p.key]),
+      backgroundColor: avgSorted.map(p => p.color + 'aa'),
+      borderColor: avgSorted.map(p => p.color),
+      borderWidth: 1,
+      borderRadius: 4,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#1a1d27',
+        borderColor: '#2e3144',
+        borderWidth: 1,
+        titleColor: '#e8eaf0',
+        bodyColor: '#8b90a8',
+        callbacks: { label: ctx => ` ממוצע: ${ctx.parsed.x} מנדטים` }
+      }
+    },
+    scales: {
+      x: { ticks: { color: '#8b90a8', font: { size: 10 } }, grid: { color: '#2e3144' }, min: 0 },
+      y: { ticks: { color: '#e8eaf0', font: { size: 10 } }, grid: { display: false } }
+    }
+  }
+});
+
+// ─── POLLS TABLE ─────────────────────────────────────────────────────────────
+const headEl = document.getElementById('tableHead');
+const bodyEl = document.getElementById('tableBody');
+
+// Header
+const headerCols = ['תאריך','מקור','חברת סקרים','מדגם', ...PARTIES.map(p =>
+  `<span class="party-chip"><span class="party-dot" style="background:${p.color}"></span>${p.name}</span>`)];
+headEl.innerHTML = `<tr>${headerCols.map(h => `<th>${h}</th>`).join('')}</tr>`;
+
+// Body — newest first, highlight >2-seat change vs row below
+const reversedPolls = [...POLLS].reverse();
+
+reversedPolls.forEach((poll, i) => {
+  const olderPoll = reversedPolls[i + 1] ?? null; // row below = older poll
+
+  const tr = document.createElement('tr');
+  const dataTd = `<td>${poll.date}</td><td>${poll.source}</td><td>${poll.pollster}</td><td>${poll.sample ?? 'לא דווח'}</td>`;
+  const seatTds = PARTIES.map(p => {
+    const curr = poll.seats[p.key];
+    const old  = olderPoll ? olderPoll.seats[p.key] : null;
+    const diff = old !== null ? curr - old : 0;
+    let cls = '';
+    if (Math.abs(diff) > 2) cls = diff > 0 ? 'class="highlight-up"' : 'class="highlight-down"';
+    const arrow = diff > 0 ? ` ↑${diff}` : diff < 0 ? ` ↓${Math.abs(diff)}` : '';
+    return `<td ${cls}>${curr}${cls ? arrow : ''}</td>`;
+  }).join('');
+  tr.innerHTML = dataTd + seatTds;
+  bodyEl.appendChild(tr);
+});
+
+// Rolling-average summary row
+const avgTr = document.createElement('tr');
+avgTr.className = 'avg-row';
+avgTr.innerHTML =
+  `<td>ממוצע מתגלגל</td><td>3 סקרים</td><td>אחרונים</td><td>—</td>` +
+  PARTIES.map(p => `<td>${avgSeats[p.key]}</td>`).join('');
+bodyEl.appendChild(avgTr);
+</script>
+
+</body>
+</html>
